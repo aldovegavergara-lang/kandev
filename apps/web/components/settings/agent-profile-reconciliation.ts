@@ -9,6 +9,7 @@ const EDITABLE_FIELDS = [
   "requireExactModel",
   "mode",
   "configOptions",
+  "cardAgent",
   "allowIndexing",
   "autoApprove",
   "cliFlags",

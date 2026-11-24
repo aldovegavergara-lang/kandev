@@ -545,6 +545,7 @@ func (s *Server) handleStart(c *gin.Context) {
 
 // AgentConfigure request/response - configures the agent command before starting
 type AgentConfigureRequest struct {
+	AgentFolder     string             `json:"agent_folder,omitempty"`
 	OpenCodeRuntime opencode.Runtime   `json:"opencode_runtime,omitzero"`
 	LaunchWrapper   launchwrapper.Spec `json:"launch_wrapper,omitzero"`
 	Command         string             `json:"command"`
@@ -594,6 +595,10 @@ func (s *Server) handleAgentConfigure(c *gin.Context) {
 		return
 	}
 
+	if req.AgentFolder != "" && !c.GetBool(authenticatedControlContextKey) {
+		c.JSON(http.StatusForbidden, AgentConfigureResponse{Error: "authenticated control is required for delegated folders"})
+		return
+	}
 	if !req.LaunchWrapper.IsZero() {
 		if !c.GetBool(authenticatedControlContextKey) {
 			c.JSON(http.StatusForbidden, AgentConfigureResponse{Error: "authenticated control is required for launch wrappers"})
@@ -626,7 +631,7 @@ func (s *Server) handleAgentConfigure(c *gin.Context) {
 		return
 	}
 
-	configureErr := s.procMgr.ConfigureRuntime(req.Command, req.AgentArgs.Args, req.AgentArgs.Present, req.Env, req.ContinueCommand, req.ContinueArgs.Args, req.ContinueArgs.Present, req.ReplaceEnv, req.PreferACPV2, req.ProjectMCPDelivery, req.InstallContext, req.OpenCodeRuntime, req.LaunchWrapper)
+	configureErr := s.procMgr.ConfigureRuntime(req.Command, req.AgentArgs.Args, req.AgentArgs.Present, req.Env, req.ContinueCommand, req.ContinueArgs.Args, req.ContinueArgs.Present, req.ReplaceEnv, req.PreferACPV2, req.ProjectMCPDelivery, req.InstallContext, req.OpenCodeRuntime, req.LaunchWrapper, req.AgentFolder)
 	if configureErr != nil {
 		s.logger.Error("failed to configure agent",
 			append(s.agentConfigureFailureFields(configureErr), zap.Error(configureErr))...)

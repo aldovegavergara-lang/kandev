@@ -240,6 +240,9 @@ type projectionState struct {
 }
 
 type sessionObservation struct {
+	delegate            *DelegateSummary
+	replyPreview        string
+	replyAt             time.Time
 	agentActivity       *AgentActivitySummary
 	id                  string
 	state               string

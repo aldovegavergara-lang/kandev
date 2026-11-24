@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"maps"
 	"os"
 	"path/filepath"
@@ -1661,6 +1662,10 @@ func (e *Executor) prepareSessionAttempt(ctx context.Context, task *v1.Task, age
 	// Resolve agent profile to get model and other settings for snapshot
 	agentProfileSnapshot, isPassthrough := e.resolveAgentProfileSnapshot(ctx, agentProfileID)
 
+	if workspace, named := agentProfileSnapshot["card_agent_workspace"]; named && workspace != task.WorkspaceID {
+		return "", errors.New("named agent belongs to another workspace")
+	}
+
 	// Determine whether this is the task's first session and whether it should
 	// become primary. The immutable origin marker follows creation order, not
 	// primary-session ownership, because a later user-selected primary must not
@@ -2054,7 +2059,7 @@ func (e *Executor) resolveAgentProfileSnapshot(ctx context.Context, agentProfile
 			"model": "",
 		}, false
 	}
-	return map[string]interface{}{
+	snapshot := map[string]interface{}{
 		"id":                           profileInfo.ProfileID,
 		"execution_grade":              profileInfo.ExecutionGrade,
 		"name":                         profileInfo.ProfileName,
@@ -2069,7 +2074,11 @@ func (e *Executor) resolveAgentProfileSnapshot(ctx context.Context, agentProfile
 		"auto_approve":                 profileInfo.AutoApprove,
 		"dangerously_skip_permissions": profileInfo.DangerouslySkipPermissions,
 		"cli_passthrough":              profileInfo.CLIPassthrough,
-	}, profileInfo.CLIPassthrough
+	}
+	if d := profileInfo.CardAgent; d != nil {
+		d.WriteSnapshot(snapshot)
+	}
+	return snapshot, profileInfo.CLIPassthrough
 }
 
 // LaunchPreparedSession launches the workspace (and optionally the agent) for a pre-created session.
@@ -3133,6 +3142,13 @@ func (e *Executor) buildLaunchAgentRequest(ctx context.Context, task *v1.Task, s
 		req.McpMode = McpModeConfig
 	}
 
+	delete(metadata, cardagent.FolderKey)
+	if folder, ok := session.AgentProfileSnapshot[cardagent.FolderKey].(string); ok {
+		if metadata == nil {
+			metadata = map[string]any{}
+		}
+		metadata[cardagent.FolderKey] = folder
+	}
 	if len(metadata) > 0 {
 		req.Metadata = metadata
 	}

@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"errors"
+	"github.com/kandev/kandev/internal/cardagent"
 	"maps"
 	"strconv"
 	"strings"
@@ -2774,7 +2775,7 @@ func (s *TaskSession) ToAPI() map[string]interface{} {
 		result["metadata"] = s.Metadata
 	}
 	if s.AgentProfileSnapshot != nil {
-		result["agent_profile_snapshot"] = s.AgentProfileSnapshot
+		result["agent_profile_snapshot"] = cardagent.PublicSnapshot(s.AgentProfileSnapshot)
 	}
 	if s.ExecutorSnapshot != nil {
 		result["executor_snapshot"] = s.ExecutorSnapshot

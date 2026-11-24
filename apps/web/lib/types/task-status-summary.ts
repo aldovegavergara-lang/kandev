@@ -92,6 +92,14 @@ export type TaskStatusSummaryCompletionGate = {
 };
 
 export type TaskStatusSummary = {
+  delegate?: {
+    session_id: string;
+    name: string;
+    at: string;
+    folder?: string;
+    purpose?: string;
+    preview?: string;
+  };
   revision: number;
   updated_at: string;
   /** Semantic task activity, separate from summary projection freshness. */

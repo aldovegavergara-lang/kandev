@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"sort"
 	"strings"
 	"time"
@@ -696,6 +697,13 @@ func (sm *SessionManager) InitializeAndPromptWithLayers(
 		effectiveModel.handled, effectiveModel.appliedModel,
 	)
 
+	if execution.metadataString(cardagent.FolderKey) != "" {
+		for _, key := range sortedConfigOptionKeys(profileConfigOptions) {
+			if value, ok := profileConfigOptionsApplied[key]; !ok || value != profileConfigOptions[key] {
+				return fmt.Errorf("saved delegate could not apply profile option %q before its first prompt", key)
+			}
+		}
+	}
 	// Capture the effective profile state before runtime overrides or workflow
 	// launch settings are applied. This event is intentionally separate from
 	// ConfigBaselineCandidate, which remains provider-default comparison data.

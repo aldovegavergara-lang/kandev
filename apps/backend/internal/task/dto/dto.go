@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/kandev/kandev/internal/cardagent"
 	"strconv"
 	"time"
 
@@ -1346,7 +1347,7 @@ func FromTaskSession(session *models.TaskSession) TaskSessionDTO {
 		State:                       session.State,
 		ErrorMessage:                session.ErrorMessage,
 		Metadata:                    session.Metadata,
-		AgentProfileSnapshot:        session.AgentProfileSnapshot,
+		AgentProfileSnapshot:        cardagent.PublicSnapshot(session.AgentProfileSnapshot),
 		ExecutorSnapshot:            session.ExecutorSnapshot,
 		EnvironmentSnapshot:         session.EnvironmentSnapshot,
 		RepositorySnapshot:          session.RepositorySnapshot,

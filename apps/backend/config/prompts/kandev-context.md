@@ -33,7 +33,7 @@ Available tools:
 {rich_output_section}
 {walkthrough_section}
 - create_task_kandev: Create explicitly requested persistent work; related follow-up uses parent_id="self".
-- spawn_session_kandev: Start an explicitly requested additional session/tab.
+- spawn_session_kandev: For a requested delegation, discover saved roles with list_agents_kandev(named_only=true), select by name or purpose, then spawn on this task with its profile ID and a short assignment. The worker receives its saved instructions automatically.
 - message_task_kandev: Send a prompt to an existing task session.{coordinator_task_control_section}
 - list_task_sessions_kandev: List a task's sessions and IDs.
 

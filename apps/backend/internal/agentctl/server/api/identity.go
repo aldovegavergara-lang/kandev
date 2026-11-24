@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/kandev/kandev/internal/cardagent"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,7 @@ var SurvivalCapabilities = []string{
 	// request and normalize Copilot's native session events. It is optional for
 	// retained-process adoption.
 	acpcompat.CopilotNativeCompactionCapability,
+	cardagent.FolderCapability,
 	agentctltypes.ProjectMCPDeliveryCapability,
 	agentctltypes.ManagedRuntimePrivatePreparationCapability,
 	agentctltypes.ManagedRuntimeRepairReuseCapability,

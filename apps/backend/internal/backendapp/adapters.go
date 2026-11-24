@@ -1226,6 +1226,7 @@ func (a *lifecycleAdapter) ResolveAgentProfile(ctx context.Context, profileID st
 		ExecutionGrade:             info.ExecutionGrade,
 		ProfileID:                  info.ProfileID,
 		ProfileName:                info.ProfileName,
+		CardAgent:                  info.CardAgent,
 		AgentID:                    info.AgentID,
 		AgentName:                  info.AgentName,
 		Model:                      info.Model,

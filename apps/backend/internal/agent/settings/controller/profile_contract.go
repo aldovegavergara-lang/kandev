@@ -9,6 +9,7 @@ func CreateProfileRequestFromDTO(request dto.ProfileCreateRequest) CreateProfile
 	return CreateProfileRequest{
 		AgentID:                 request.AgentID,
 		Name:                    request.Name,
+		CardAgent:               request.CardAgent,
 		ExecutionGrade:          request.ExecutionGrade,
 		Model:                   request.Model,
 		FallbackModel:           request.FallbackModel,
@@ -42,6 +43,7 @@ func UpdateProfileRequestFromDTO(request dto.ProfileUpdateRequest) UpdateProfile
 	return UpdateProfileRequest{
 		ID:                      request.ID,
 		Name:                    request.Name,
+		CardAgent:               request.CardAgent,
 		ExecutionGrade:          request.ExecutionGrade,
 		Model:                   request.Model,
 		FallbackModel:           request.FallbackModel,

@@ -21,6 +21,22 @@ func (h *Handlers) handleListAgents(ctx context.Context, msg *ws.Message) (*ws.M
 		h.logger.Error("failed to list agents", zap.Error(err))
 		return ws.NewError(msg.ID, msg.Action, ws.ErrorCodeInternalError, "Failed to list agents", nil)
 	}
+	var filter struct {
+		CallerTaskID string `json:"caller_task_id"`
+		NamedOnly    bool   `json:"named_only"`
+	}
+	if len(msg.Payload) > 0 {
+		if err := json.Unmarshal(msg.Payload, &filter); err != nil {
+			return ws.NewError(msg.ID, msg.Action, ws.ErrorCodeBadRequest, "invalid agent filter", nil)
+		}
+	}
+	if filter.CallerTaskID != "" {
+		task, err := h.taskSvc.GetTask(ctx, filter.CallerTaskID)
+		if err != nil || task == nil {
+			return ws.NewError(msg.ID, msg.Action, ws.ErrorCodeNotFound, "caller task unavailable", nil)
+		}
+		return ws.NewResponse(msg.ID, msg.Action, taskAgentCatalog(resp, task.WorkspaceID, filter.NamedOnly))
+	}
 	return ws.NewResponse(msg.ID, msg.Action, resp)
 }
 
@@ -242,4 +258,51 @@ func (h *Handlers) publishAgentProfileEvent(ctx context.Context, eventType strin
 			zap.String("event_type", eventType),
 			zap.Error(err))
 	}
+}
+
+func taskAgentCatalog(list *agentsettingsdto.ListAgentsResponse, workspace string, namedOnly bool) any {
+	if !namedOnly {
+		result := *list
+		result.Agents = make([]agentsettingsdto.AgentDTO, 0, len(list.Agents))
+		for _, a := range list.Agents {
+			profiles := make([]agentsettingsdto.AgentProfileDTO, 0, len(a.Profiles))
+			for _, p := range a.Profiles {
+				if d := p.CardAgent; d != nil {
+					if d.WorkspaceID != workspace {
+						continue
+					}
+					brief := *d
+					brief.Instructions = ""
+					p.CardAgent = &brief
+				}
+				profiles = append(profiles, p)
+			}
+			a.Profiles = profiles
+			result.Agents = append(result.Agents, a)
+		}
+		return result
+	}
+	agents := make([]map[string]any, 0, len(list.Agents))
+	for _, a := range list.Agents {
+		profiles := make([]map[string]any, 0, len(a.Profiles))
+		for _, p := range a.Profiles {
+			if !p.Enabled {
+				continue
+			}
+			d := p.CardAgent
+			if d == nil || d.WorkspaceID != workspace {
+				continue
+			}
+			row := map[string]any{"id": p.ID, "name": p.Name, "model": p.Model, "kind": p.Kind}
+			if d != nil {
+				row["purpose"] = d.Purpose
+				row["folder"] = d.Folder
+			}
+			profiles = append(profiles, row)
+		}
+		if len(profiles) > 0 {
+			agents = append(agents, map[string]any{"id": a.ID, "name": a.Name, "profiles": profiles})
+		}
+	}
+	return map[string]any{"agents": agents, "total": len(agents)}
 }

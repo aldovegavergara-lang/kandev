@@ -665,5 +665,14 @@
   "antigravityRuntimeCLI": "CLI Antigravity",
   "antigravityRuntimeStandalone": "Servidor ACP autónomo",
   "antigravityStandaloneSignInHint": "Inicie sessão no servidor ACP autónomo no anfitrião Kandev. As credenciais são diferentes das do CLI Antigravity.",
-  "signIn": "Iniciar sessão"
+  "signIn": "Iniciar sessão",
+  "delegateAction": "Delegar a um agente",
+  "delegateRole": "Agente delegado",
+  "delegatePurpose": "Finalidade",
+  "delegateFolder": "Pasta na área de trabalho do cartão (. para a raiz)",
+  "delegateInstructions": "Instruções (Markdown)",
+  "delegateAssignment": "Tarefa a executar",
+  "delegateOpen": "Abrir sessão do agente",
+  "delegateConfigure": "Configurar um agente delegado nas definições",
+  "delegateFailed": "Não foi possível concluir o pedido"
 }

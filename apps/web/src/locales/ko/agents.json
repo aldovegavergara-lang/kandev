@@ -665,5 +665,14 @@
   "antigravityRuntimeCLI": "Antigravity 명령줄 도구",
   "antigravityRuntimeStandalone": "독립형 ACP 서버",
   "antigravityStandaloneSignInHint": "Kandev 호스트에서 독립형 ACP 서버에 로그인하세요. 로그인 정보는 Antigravity CLI와 별도로 저장됩니다.",
-  "signIn": "로그인"
+  "signIn": "로그인",
+  "delegateAction": "에이전트에 위임",
+  "delegateRole": "저장된 위임 에이전트",
+  "delegatePurpose": "역할",
+  "delegateFolder": "카드 작업 공간의 폴더 (루트는 .)",
+  "delegateInstructions": "지침 (Markdown)",
+  "delegateAssignment": "요청할 작업",
+  "delegateOpen": "에이전트 세션 열기",
+  "delegateConfigure": "설정에서 위임할 에이전트 등록",
+  "delegateFailed": "요청을 완료할 수 없습니다"
 }

@@ -52,14 +52,18 @@ func (s *Server) registerListRepositoriesTool() {
 }
 
 func (s *Server) registerListAgentsTool() {
+	schema := `{"type":"object","properties":{}}`
 	description := "List all configured agents with their profiles."
 	if s.profile.Surface == mcpprofile.SurfaceKanbanTask || s.profile.Surface == mcpprofile.SurfaceAutomation {
 		description = "List all configured agents with their profiles. Use this to find available agent_profile_ids for create_task_kandev and spawn_session_kandev."
 	}
+	if s.profile.Surface == mcpprofile.SurfaceKanbanTask {
+		schema = `{"type":"object","properties":{"named_only":{"type":"boolean","description":"Return only saved delegates with their short purpose and working folder. Use for role-based delegation."}}}`
+	}
 	s.mcpServer.AddTool(
 		mcp.NewToolWithRawSchema("list_agents_kandev",
 			description,
-			json.RawMessage(`{"type":"object","properties":{}}`),
+			json.RawMessage(schema),
 		),
 		s.wrapHandler("list_agents_kandev", s.listAgentsHandler()),
 	)

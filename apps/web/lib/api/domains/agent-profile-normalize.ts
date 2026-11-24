@@ -266,6 +266,23 @@ function pickDynamic(raw: RawProfile): DynamicAgentProfile | undefined {
  * the canonical `AgentProfile`. Office-orchestration fields are left
  * undefined — kanban rows do not carry them.
  */
+function readCardAgent(value: unknown) {
+  if (!value || typeof value !== "object") return undefined;
+  const d = value as Record<string, unknown>;
+  if (
+    typeof d.workspace_id === "string" &&
+    typeof d.folder === "string" &&
+    typeof d.purpose === "string" &&
+    typeof d.instructions === "string"
+  )
+    return {
+      workspace_id: d.workspace_id,
+      folder: d.folder,
+      purpose: d.purpose,
+      instructions: d.instructions,
+    };
+}
+
 export function normalizeAgentProfile(raw: unknown): AgentProfile {
   const profile = (raw ?? {}) as RawProfile;
   const kind = pickString(profile, "kind", "kind");
@@ -282,6 +299,7 @@ export function normalizeAgentProfile(raw: unknown): AgentProfile {
     autoFallback: pickBool(profile, "autoFallback", "auto_fallback"),
     requireExactModel: pickBool(profile, "requireExactModel", "require_exact_model"),
     mode: (profile.mode as string | undefined) ?? undefined,
+    cardAgent: readCardAgent(profile.cardAgent ?? profile.card_agent),
     configOptions: pickConfigOptions(profile),
     allowIndexing: pickBool(profile, "allowIndexing", "allow_indexing"),
     autoApprove: pickBool(profile, "autoApprove", "auto_approve"),
@@ -367,6 +385,7 @@ export function toAgentProfilePayload(
   setPayloadField(payload, "auto_fallback", profile.autoFallback);
   setPayloadField(payload, "require_exact_model", profile.requireExactModel);
   setPayloadField(payload, "mode", profile.mode);
+  setPayloadField(payload, "card_agent", profile.cardAgent);
   setPayloadField(payload, "config_options", profile.configOptions);
   setPayloadField(payload, "allow_indexing", profile.allowIndexing);
   setPayloadField(payload, "auto_approve", profile.autoApprove);

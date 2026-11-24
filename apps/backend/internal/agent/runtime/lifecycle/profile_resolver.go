@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 
 	"github.com/kandev/kandev/internal/agent/agents"
 	"github.com/kandev/kandev/internal/agent/registry"
@@ -84,6 +85,7 @@ func (r *StoreProfileResolver) ResolveProfile(ctx context.Context, profileID str
 		ResourceCircuitKey:         r.resolveResourceCircuitKey(profile),
 		ProfileID:                  profile.ID,
 		ProfileName:                profile.Name,
+		CardAgent:                  cardagent.FromSettings(profile.Settings),
 		AgentID:                    agent.ID,
 		AgentName:                  agent.Name,
 		Model:                      model,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ComponentProps } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "@/lib/routing/client-router";
 import { Button } from "@kandev/ui/button";
 import { Task } from "./kanban-card";
@@ -9,10 +9,9 @@ import { useAppStore, useAppStoreApi } from "@/components/state-provider";
 import type { Task as BackendTask } from "@/lib/types/http";
 import type { WorkflowsState } from "@/lib/state/slices";
 import { type MoveTaskError } from "@/hooks/use-drag-and-drop";
-import { SwimlaneContainer } from "./kanban/swimlane-container";
+import { KanbanSwimlanes } from "./kanban/kanban-swimlanes";
 import { KanbanHeader } from "./kanban/kanban-header";
 import { MobileFab } from "./kanban/mobile-fab";
-import { PullToRefresh } from "./mobile/pull-to-refresh";
 import { MobileSearchBar } from "./kanban/mobile-search-bar";
 import { TaskMultiSelectToolbar } from "./kanban/task-multi-select-toolbar";
 import { useKanbanData, useKanbanActions, useKanbanNavigation } from "@/hooks/domains/kanban";
@@ -459,6 +458,7 @@ export function KanbanBoard({ onPreviewTask, onOpenTask, onBeforeEdit }: KanbanB
         />
       )}
       <KanbanSwimlanes
+        workspace={s.workspaceState.activeId}
         viewMode={s.kanbanViewMode || ""}
         workflowFilter={s.workflowsState.activeId}
         onPreviewTask={s.handleCardClick}
@@ -497,16 +497,6 @@ export function KanbanBoard({ onPreviewTask, onOpenTask, onBeforeEdit }: KanbanB
       {s.isMobile && <MobileFab onClick={s.handleCreate} />}
     </div>
   );
-}
-
-type KanbanSwimlanesProps = ComponentProps<typeof SwimlaneContainer> & {
-  isMobile: boolean;
-  onRefresh: () => Promise<void>;
-};
-
-function KanbanSwimlanes({ isMobile, onRefresh, ...props }: KanbanSwimlanesProps) {
-  const swimlanes = <SwimlaneContainer {...props} />;
-  return isMobile ? <PullToRefresh onRefresh={onRefresh}>{swimlanes}</PullToRefresh> : swimlanes;
 }
 
 type KanbanBoardDialogsProps = {

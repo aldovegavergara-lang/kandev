@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"strings"
 	"time"
 
@@ -2227,7 +2228,7 @@ func (s *Service) publishTaskSessionStateChanged(
 		metaKeyNewState:             string(nextState),
 		"error_message":             errorMessage,
 		metaKeyAgentProfileID:       agentProfileID,
-		"agent_profile_snapshot":    session.AgentProfileSnapshot,
+		"agent_profile_snapshot":    cardagent.PublicSnapshot(session.AgentProfileSnapshot),
 		"execution_profile_id":      session.ExecutionProfileID,
 		"route_generation":          session.RouteGeneration,
 		"route_state":               session.RouteState,

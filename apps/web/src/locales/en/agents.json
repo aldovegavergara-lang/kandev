@@ -665,5 +665,14 @@
   "antigravityRuntimeCLI": "Antigravity CLI",
   "antigravityRuntimeStandalone": "Standalone ACP server",
   "antigravityStandaloneSignInHint": "Sign in to the standalone ACP server on the Kandev host. Its credentials are separate from the Antigravity CLI.",
-  "signIn": "Sign in"
+  "signIn": "Sign in",
+  "delegateAction": "Delegate to an agent",
+  "delegateRole": "Saved delegate",
+  "delegatePurpose": "Purpose",
+  "delegateFolder": "Folder in the card workspace (. for root)",
+  "delegateInstructions": "Instructions (Markdown)",
+  "delegateAssignment": "Assignment",
+  "delegateOpen": "Open agent session",
+  "delegateConfigure": "Set up a delegate in agent settings",
+  "delegateFailed": "Could not complete the request"
 }

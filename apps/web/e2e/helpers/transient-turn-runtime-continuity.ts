@@ -15,6 +15,7 @@ export type MockACPTrace = {
   session_id: string;
   process_id: string;
   connection_id: string;
+  config_id?: string;
   prompt?: string;
   value?: string;
   scenario?: string;

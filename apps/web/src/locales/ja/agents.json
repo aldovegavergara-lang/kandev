@@ -665,5 +665,14 @@
   "antigravityRuntimeCLI": "Antigravity コマンドライン",
   "antigravityRuntimeStandalone": "スタンドアロン ACP サーバー",
   "antigravityStandaloneSignInHint": "Kandev ホスト上でスタンドアロン ACP サーバーにサインインしてください。ログイン情報は Antigravity CLI とは別です。",
-  "signIn": "サインイン"
+  "signIn": "サインイン",
+  "delegateAction": "エージェントに委任",
+  "delegateRole": "委任先エージェント",
+  "delegatePurpose": "役割",
+  "delegateFolder": "カードの作業領域内のフォルダー（ルートは .）",
+  "delegateInstructions": "指示（Markdown）",
+  "delegateAssignment": "依頼内容",
+  "delegateOpen": "エージェントのセッションを開く",
+  "delegateConfigure": "設定で委任先を登録",
+  "delegateFailed": "リクエストを完了できませんでした"
 }

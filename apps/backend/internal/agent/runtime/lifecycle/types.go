@@ -4,6 +4,7 @@ package lifecycle
 
 import (
 	"context"
+	"github.com/kandev/kandev/internal/cardagent"
 	"io"
 	"strings"
 	"sync"
@@ -1989,6 +1990,7 @@ type CredentialsManager interface {
 
 // AgentProfileInfo contains resolved profile information
 type AgentProfileInfo struct {
+	CardAgent          *cardagent.Definition
 	ExecutionGrade     string
 	ProfileID          string
 	ProfileName        string

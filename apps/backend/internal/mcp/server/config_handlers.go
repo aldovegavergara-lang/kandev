@@ -441,6 +441,9 @@ func (s *Server) updateWorkflowStepHandler() server.ToolHandlerFunc {
 
 func (s *Server) listAgentsHandler() server.ToolHandlerFunc {
 	return func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		if s.profile.Surface == p.SurfaceKanbanTask && s.taskID != "" {
+			return s.forwardToBackend(ctx, ws.ActionMCPListAgents, map[string]any{"caller_task_id": s.taskID, "named_only": req.GetBool("named_only", false)})
+		}
 		return s.forwardToBackend(ctx, ws.ActionMCPListAgents, nil)
 	}
 }

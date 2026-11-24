@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"sort"
 	"strings"
 
@@ -89,6 +90,7 @@ func (c *Controller) agentNameForProfile(ctx context.Context, profile *models.Ag
 }
 
 type CreateProfileRequest struct {
+	CardAgent         *cardagent.Definition `json:"card_agent,omitempty"`
 	ExecutionGrade    string
 	AgentID           string
 	Name              string
@@ -161,6 +163,9 @@ func (c *Controller) CreateProfile(ctx context.Context, req CreateProfileRequest
 	}
 	if isDisabledOptionalAgent(agentConfig) {
 		return nil, ErrAgentFeatureDisabled
+	}
+	if req.CardAgent != nil && *req.CardAgent != (cardagent.Definition{}) {
+		req.RequireExactModel = true
 	}
 	if err := validateRequireExactModelPolicy(req.Model, req.RequireExactModel, req.CLIPassthrough, agent.Name == agents.DynamicAgentID); err != nil {
 		return nil, err
@@ -237,6 +242,9 @@ func (c *Controller) CreateProfile(ctx context.Context, req CreateProfileRequest
 		ProviderAPIKeySecretID:  req.ProviderAPIKeySecretID,
 		UserModified:            true,
 	}
+	if err := applyCardAgent(profile, req.CardAgent); err != nil {
+		return nil, err
+	}
 	canonicalizePiThinkingProfile(agent.Name, profile, false)
 	if err := c.normalizeProviderConfig(ctx, profile, agent.Name); err != nil {
 		return nil, err
@@ -255,6 +263,9 @@ func (c *Controller) createDynamicProfile(
 	displayName string,
 	req CreateProfileRequest,
 ) (*dto.AgentProfileDTO, error) {
+	if req.CardAgent != nil {
+		return nil, fmt.Errorf("named agents require a concrete harness")
+	}
 	if !c.dynamicAgentRoutingEnabled {
 		return nil, ErrDynamicAgentRoutingDisabled
 	}
@@ -469,6 +480,7 @@ func dynamicProfileDTO(profile *models.DynamicAgentProfile, routes []models.Dyna
 }
 
 type UpdateProfileRequest struct {
+	CardAgent         *cardagent.Definition `json:"card_agent,omitempty"`
 	ExecutionGrade    *string
 	ID                string
 	Name              *string
@@ -512,7 +524,7 @@ func (req UpdateProfileRequest) touchesProvider() bool {
 func enabledOnlyUpdate(req UpdateProfileRequest) bool {
 	return req.Enabled != nil && req.Name == nil && req.Model == nil &&
 		req.ExecutionGrade == nil && req.FallbackModel == nil && req.AutoFallback == nil && req.RequireExactModel == nil && req.Mode == nil &&
-		req.ConfigOptions == nil && req.AllowIndexing == nil && req.AutoApprove == nil &&
+		req.CardAgent == nil && req.ConfigOptions == nil && req.AllowIndexing == nil && req.AutoApprove == nil &&
 		req.CLIPassthrough == nil && req.CLIFlags == nil && req.EnvVars == nil &&
 		req.CommandPrefix == nil && !req.touchesProvider() && req.CursorMCPAuthEnabled == nil &&
 		req.CursorPluginsMCPEnabled == nil && req.MCPSelectionMode == nil && req.MCPSelectedServers == nil &&
@@ -627,6 +639,9 @@ func (c *Controller) UpdateProfile(ctx context.Context, req UpdateProfileRequest
 		profile.MCPSelectedServers = append([]string{}, (*req.MCPSelectedServers)...)
 	}
 
+	if err := applyCardAgent(profile, req.CardAgent); err != nil {
+		return nil, err
+	}
 	if err := validateRequireExactModelPolicy(profile.Model, profile.RequireExactModel, profile.CLIPassthrough, isDynamic); err != nil {
 		return nil, err
 	}
@@ -732,6 +747,7 @@ func (c *Controller) UpdateProfile(ctx context.Context, req UpdateProfileRequest
 			return nil, err
 		}
 	}
+
 	profile.UserModified = true
 	if dynamic != nil {
 		result, handled, atomicErr := c.updateDynamicProfileAtomically(
@@ -1564,6 +1580,7 @@ func (c *Controller) decorateAgentDTO(ctx context.Context, result *dto.AgentDTO)
 
 func toProfileDTO(profile *models.AgentProfile) dto.AgentProfileDTO {
 	return dto.AgentProfileDTO{
+		CardAgent:               cardagent.FromSettings(profile.Settings),
 		ID:                      profile.ID,
 		AgentID:                 profile.AgentID,
 		Kind:                    profileKind(profile),
@@ -1678,5 +1695,27 @@ func validateProfileEnvVarDTOs(in []dto.ProfileEnvVarDTO) error {
 	if err := profileenv.Validate(entries); err != nil {
 		return fmt.Errorf("%w: %v", ErrInvalidProfileEnvVars, err)
 	}
+	return nil
+}
+
+var ErrInvalidCardAgent = errors.New("invalid saved delegate")
+
+func applyCardAgent(profile *models.AgentProfile, patch *cardagent.Definition) error {
+	settings, err := cardagent.UpdateSettings(profile.Settings, patch)
+	if err != nil {
+		return fmt.Errorf("%w: %w", ErrInvalidCardAgent, err)
+	}
+	if cardagent.FromSettings(settings) != nil {
+		if profile.CLIPassthrough || profileKind(profile) == dynamicProfileKind {
+			return fmt.Errorf("%w: choose a managed concrete CLI profile", ErrInvalidCardAgent)
+		}
+		if strings.TrimSpace(profile.Model) == "" {
+			return ErrRequireExactModelNeedsModel
+		}
+		profile.RequireExactModel = true
+		profile.AutoFallback = false
+		profile.FallbackModel = ""
+	}
+	profile.Settings = settings
 	return nil
 }

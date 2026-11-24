@@ -665,5 +665,14 @@
   "antigravityRuntimeCLI": "Àńţĩĝŕàvĩţŷ ĆĹĨ",
   "antigravityRuntimeStandalone": "Śţàńďàĺōńē ÀĆƤ śēŕvēŕ",
   "antigravityStandaloneSignInHint": "Śĩĝń ĩń ţō ţĥē śţàńďàĺōńē ÀĆƤ śēŕvēŕ ōń ţĥē Ķàńďēv ĥōśţ. Ĩţś ćŕēďēńţĩàĺś àŕē śēƥàŕàţē ƒŕōḿ ţĥē Àńţĩĝŕàvĩţŷ ĆĹĨ.",
-  "signIn": "Śĩĝń ĩń"
+  "signIn": "Śĩĝń ĩń",
+  "delegateAction": "Ďēĺēĝàţē ţō àń àĝēńţ",
+  "delegateRole": "Śàvēď ďēĺēĝàţē",
+  "delegatePurpose": "Ƥũŕƥōśē",
+  "delegateFolder": "Ƒōĺďēŕ ĩń ţĥē ćàŕď ŵōŕķśƥàćē (. ƒōŕ ŕōōţ)",
+  "delegateInstructions": "Ĩńśţŕũćţĩōńś (Ḿàŕķďōŵń)",
+  "delegateAssignment": "Àśśĩĝńḿēńţ",
+  "delegateOpen": "Ōƥēń àĝēńţ śēśśĩōń",
+  "delegateConfigure": "Śēţ ũƥ à ďēĺēĝàţē ĩń àĝēńţ śēţţĩńĝś",
+  "delegateFailed": "Ćōũĺď ńōţ ćōḿƥĺēţē ţĥē ŕēqũēśţ"
 }

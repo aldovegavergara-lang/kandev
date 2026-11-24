@@ -20,6 +20,13 @@ import type { AgentProfileId, WorkspaceId } from "./ids";
 //     skillIds, agentProfileId. Always populated by the office API;
 //     absent on kanban-served rows.
 
+export type CardAgent = {
+  workspace_id: string;
+  purpose: string;
+  folder: string;
+  instructions: string;
+};
+
 export type CLIFlag = {
   description: string;
   flag: string;
@@ -132,6 +139,7 @@ export type AgentProfile = {
   /** Optional ACP session mode applied via `session/set_mode`. */
   mode?: string;
   /** Dynamic ACP session config options applied via `session/set_config_option`. */
+  cardAgent?: CardAgent;
   configOptions?: Record<string, string>;
   /** @deprecated Use cliFlags. Retained for legacy clients. */
   allowIndexing: boolean;
@@ -251,6 +259,7 @@ export type AgentProfilePayload = {
   auto_fallback?: boolean;
   require_exact_model?: boolean;
   mode?: string;
+  card_agent?: CardAgent;
   config_options?: Record<string, string>;
   allow_indexing: boolean;
   auto_approve: boolean;

@@ -37,6 +37,7 @@ export function isProfileDirty(
 
 function hasCoreProfileFieldsChanged(draft: AgentProfile, savedProfile: AgentProfile): boolean {
   return [
+    JSON.stringify(draft.cardAgent) !== JSON.stringify(savedProfile.cardAgent),
     draft.name !== savedProfile.name,
     draft.model !== savedProfile.model,
     (draft.fallbackModel ?? "") !== (savedProfile.fallbackModel ?? ""),

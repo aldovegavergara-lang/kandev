@@ -665,5 +665,14 @@
   "antigravityRuntimeCLI": "Antigravity 命令行工具",
   "antigravityRuntimeStandalone": "独立 ACP 服务器",
   "antigravityStandaloneSignInHint": "请在 Kandev 主机上登录独立 ACP 服务器。它的凭据与 Antigravity CLI 分开保存。",
-  "signIn": "登录"
+  "signIn": "登录",
+  "delegateAction": "委派给智能体",
+  "delegateRole": "已保存的委派智能体",
+  "delegatePurpose": "用途",
+  "delegateFolder": "卡片工作区内的文件夹（根目录为 .）",
+  "delegateInstructions": "指令（Markdown）",
+  "delegateAssignment": "委派任务",
+  "delegateOpen": "打开智能体会话",
+  "delegateConfigure": "在设置中配置委派智能体",
+  "delegateFailed": "无法完成请求"
 }

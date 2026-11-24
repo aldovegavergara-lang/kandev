@@ -1,9 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconArrowsMaximize, IconDots } from "@tabler/icons-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@kandev/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@kandev/ui/dropdown-menu";
 import { KanbanCardDropdownMenuItems } from "@/components/kanban-card-menu-items";
 import type { KanbanCardActionProps } from "@/components/kanban-card-content";
 import {
@@ -15,6 +20,8 @@ import { useTaskPendingInput } from "@/hooks/use-task-pending-input";
 import { createDebugLogger, isDebug } from "@/lib/debug/log";
 import { shouldShowTaskRunningSpinner } from "@/lib/ui/state-icons";
 import type { Task } from "@/components/kanban-card";
+
+import { DelegateCardContext } from "./kanban/delegate-board";
 
 const kanbanStatusDebug = createDebugLogger("kanban:task-status");
 
@@ -60,6 +67,7 @@ function KanbanCardMenu(props: KanbanCardMenuProps) {
     onPRMenuOpenChange,
   } = props;
   const { menuEntries } = props;
+  const delegate = useContext(DelegateCardContext);
   const isProcessing = isDeleting || isArchiving;
 
   return (
@@ -84,6 +92,14 @@ function KanbanCardMenu(props: KanbanCardMenuProps) {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
+        {delegate && (
+          <DropdownMenuItem
+            onClick={(e) => e.stopPropagation()}
+            onSelect={() => delegate(props.task)}
+          >
+            {t("agents:delegateAction")}
+          </DropdownMenuItem>
+        )}
         <KanbanCardDropdownMenuItems entries={menuEntries} />
       </DropdownMenuContent>
     </DropdownMenu>

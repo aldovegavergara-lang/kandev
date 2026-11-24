@@ -1028,6 +1028,7 @@ export class ApiClient {
   async updateAgentProfile(
     profileId: string,
     patch: {
+      card_agent?: AgentProfile["cardAgent"];
       name?: string;
       model?: string;
       fallback_model?: string;

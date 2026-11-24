@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"reflect"
 	"strconv"
 	"strings"
@@ -7860,7 +7861,7 @@ func (s *Service) publishSessionCreatedEvent(ctx context.Context, taskID, sessio
 			eventData["agent_profile_id"] = session.AgentProfileID
 		}
 		if len(session.AgentProfileSnapshot) > 0 {
-			eventData["agent_profile_snapshot"] = session.AgentProfileSnapshot
+			eventData["agent_profile_snapshot"] = cardagent.PublicSnapshot(session.AgentProfileSnapshot)
 		}
 		if session.TaskEnvironmentID != "" {
 			eventData["task_environment_id"] = session.TaskEnvironmentID

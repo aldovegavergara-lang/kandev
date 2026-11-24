@@ -51,6 +51,7 @@ const QuotaWaitReasonQuotaLimited = "quota_limited"
 // consumers. Revision and UpdatedAt are transport metadata and are ignored by
 // SemanticEqual when deciding whether a projection actually changed.
 type TaskStatusSummary struct {
+	Delegate       *DelegateSummary       `json:"delegate,omitempty"`
 	Revision       uint64                 `json:"revision"`
 	UpdatedAt      time.Time              `json:"updated_at"`
 	AgentActivity  *AgentActivitySummary  `json:"agent_activity,omitempty"`
@@ -223,6 +224,9 @@ func (s TaskStatusSummary) SemanticEqual(other TaskStatusSummary) bool {
 // Validate enforces the bounded fields at the persistence boundary. Other
 // source-specific limits belong to the projector that derives this model.
 func (s TaskStatusSummary) Validate() error {
+	if s.Delegate != nil && !s.Delegate.valid() {
+		return fmt.Errorf("invalid delegate summary")
+	}
 	if s.AgentActivity != nil && !s.AgentActivity.valid() {
 		return fmt.Errorf("invalid agent activity")
 	}
@@ -496,6 +500,7 @@ func (s TaskStatusSummary) SemanticJSON() ([]byte, error) {
 		return nil, err
 	}
 	return json.Marshal(semanticPayload{
+		Delegate:            s.Delegate,
 		AgentActivity:       s.AgentActivity,
 		LastActivityAt:      s.LastActivityAt,
 		PrimarySession:      s.PrimarySession,
@@ -517,6 +522,7 @@ func (s TaskStatusSummary) SemanticJSON() ([]byte, error) {
 }
 
 type semanticPayload struct {
+	Delegate            *DelegateSummary       `json:"delegate,omitempty"`
 	AgentActivity       *AgentActivitySummary  `json:"agent_activity,omitempty"`
 	LastActivityAt      *time.Time             `json:"last_activity_at,omitempty"`
 	PrimarySession      *PrimarySessionSummary `json:"primary_session,omitempty"`

@@ -11,6 +11,12 @@ The composer model picker shows the session's agent CLI logo beside the selected
 
 Agent authentication is separate from repository and integration credentials.
 
+## Delegate work from a Kanban card
+
+In **Settings → Agents**, open a concrete CLI profile, give it a name and choose its model. Select a reasoning effort if the CLI offers one. Enable **Saved delegate**, select the workspace and enter a short purpose, a folder and Markdown instructions. The folder is relative to the card's checkout on the executor. Use `.` for its root or, for example, `apps/web` for a child directory.
+
+Open the card menu and choose **Delegate to an agent**. Select a profile and enter the assignment. The card links to the separate session and shows its latest reply. To delegate through the coordinator, try “Ask Revisor to check this diff and report the tests it ran.” The coordinator can discover workspace roles with `list_agents_kandev(named_only=true)` and pass the chosen profile ID to `spawn_session_kandev`. Discovery sends a short purpose. Kandev adds the selected Markdown to the worker's initial assignment.
+
 ## Recover from provider authentication failures
 
 An agent may need to sign in to its model provider before it can create or

@@ -1835,7 +1835,7 @@ func (s *Server) registerSpawnSessionTool() {
 	s.mcpServer.AddTool(
 		mcp.NewTool("spawn_session_kandev",
 			mcp.WithDescription(`Start an additional Kandev session on an existing task. This creates a persistent Kandev session/tab, not a native subagent; call it only when the user explicitly requests another Kandev session or a Kandev workflow requires session coordination. It does not create a task. Returns {task_id, session_id, state, agent_profile_id} for a distinct session; the resolved profile takes precedence over workflow session routing.`),
-			mcp.WithString("prompt", mcp.Required(), mcp.Description("The Kandev session's initial prompt. This is the ONLY context the new agent receives — be specific and detailed.")),
+			mcp.WithString("prompt", mcp.Required(), mcp.Description("The new session's assignment. Include task-specific context. A saved delegate receives its role instructions automatically.")),
 			mcp.WithString("agent_profile_id", mcp.Description("Requested agent profile takes precedence over workflow profiles. Omit to inherit your same-task session's profile, then the target task's primary-session profile. If neither resolves a profile, normal launch defaults or errors apply.")),
 			mcp.WithString("name", mcp.Description("Optional session name shown on the session tab (e.g. 'reviewer'). Helps the user tell concurrent sessions apart.")),
 			mcp.WithString("task_id", mcp.Description("Task to spawn the session on. Omit to use your current task.")),

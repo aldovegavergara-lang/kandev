@@ -665,5 +665,14 @@
   "antigravityRuntimeCLI": "Antigravity 命令列工具",
   "antigravityRuntimeStandalone": "獨立 ACP 伺服器",
   "antigravityStandaloneSignInHint": "請在 Kandev 主機上登入獨立 ACP 伺服器。它的認證資訊與 Antigravity CLI 分開儲存。",
-  "signIn": "登入"
+  "signIn": "登入",
+  "delegateAction": "委派給代理程式",
+  "delegateRole": "已儲存的委派代理程式",
+  "delegatePurpose": "用途",
+  "delegateFolder": "卡片工作區內的資料夾（根目錄為 .）",
+  "delegateInstructions": "指示（Markdown）",
+  "delegateAssignment": "委派工作",
+  "delegateOpen": "開啟代理程式工作階段",
+  "delegateConfigure": "在設定中新增委派代理程式",
+  "delegateFailed": "無法完成要求"
 }

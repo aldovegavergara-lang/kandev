@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"maps"
 	"os"
 	"runtime"
@@ -957,6 +958,15 @@ func (s *Service) startCreatedSession(
 				"mode":           profileInfo.Mode,
 				"config_options": maps.Clone(profileInfo.ConfigOptions),
 			}
+			if profileInfo.CardAgent != nil {
+				owner, err := s.repo.GetTask(ctx, taskID)
+				if err != nil {
+					return nil, err
+				}
+				if err := profileInfo.CardAgent.Snapshot(session.AgentProfileSnapshot, owner.WorkspaceID); err != nil {
+					return nil, err
+				}
+			}
 		}
 		if err := s.persistFullTaskSessionIfCurrent(ctx, session, observedState); err != nil {
 			return nil, fmt.Errorf("persist workflow session profile: %w", err)
@@ -1092,6 +1102,7 @@ func (s *Service) startCreatedSession(
 			ctx, effectivePrompt, taskID, sessionID, session, dbTask,
 			isOfficeTask, configMode, titleOwner, includeCanvasGuidance, references, promptReferenceContext,
 		)
+		effectivePrompt = cardagent.Assignment(session.AgentProfileSnapshot, effectivePrompt)
 	}
 	if err := s.validateClaimedCeilingBinding(ctx, taskID, options.ceilingEntryBinding); err != nil {
 		return nil, err
@@ -2155,6 +2166,7 @@ func (s *Service) startTask(ctx context.Context, taskID string, agentProfileID s
 			includeParentQuestionTool: task.Autopilot && task.ParentID != "",
 			spawnOrigin:               opts.SpawnOrigin,
 		})
+		effectivePrompt = cardagent.Assignment(launchSession.AgentProfileSnapshot, effectivePrompt)
 	}
 
 	// Office tasks restrict the MCP toolset: kanban tools (move/update/list
@@ -7904,10 +7916,10 @@ func (s *Service) finishPromptExecutorDispatch(
 					context.WithoutCancel(ctx), sessionID, "backend_delivery_completion_failed", delivery,
 				)
 				return &PromptResult{
-						StopReason: result.StopReason, AgentMessage: result.AgentMessage, TurnID: rollback.turnID,
-					}, &acceptedPromptDispatchError{
-						err: errors.Join(completionErr, recoveryErr),
-					}
+					StopReason: result.StopReason, AgentMessage: result.AgentMessage, TurnID: rollback.turnID,
+				}, &acceptedPromptDispatchError{
+					err: errors.Join(completionErr, recoveryErr),
+				}
 			}
 		}
 	}

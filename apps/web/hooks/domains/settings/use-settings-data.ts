@@ -16,7 +16,7 @@ const EMPTY_AGENT_LIST_SNAPSHOT: AgentListSnapshot = {
   error: null,
 };
 
-function useAgentListResource(enabled: boolean) {
+export function useAgentListResource(enabled: boolean) {
   const store = useAppStoreApi();
   const identity = useAppStore(agentListAuthScopeIdentity);
   const scope = useMemo(

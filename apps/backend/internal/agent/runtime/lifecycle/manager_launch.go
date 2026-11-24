@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"maps"
 	"os"
 	"path/filepath"
@@ -3478,7 +3479,8 @@ func (m *Manager) configureAndStartAgentWithPreparedArgsAndPreparation(
 		// provenance, so keep the private/ordinary path.
 		installContext = nil
 	}
-	if err := client.ConfigureAgentRuntimeWithProjectDeliveryAndInstallContext(ctx, execution.AgentCommand, agentArgs, configureEnv, execution.ContinueCommand, execution.ContinueArgs, delivery, installContext, execution.OpenCodeRuntime, execution.LaunchWrapper, execution.preferACPV2); err != nil {
+	folder := execution.metadataString(cardagent.FolderKey)
+	if err := client.ConfigureAgentRuntimeWithProjectDeliveryAndInstallContext(ctx, execution.AgentCommand, agentArgs, configureEnv, execution.ContinueCommand, execution.ContinueArgs, delivery, installContext, execution.OpenCodeRuntime, execution.LaunchWrapper, execution.preferACPV2, folder); err != nil {
 		return "", fmt.Errorf("failed to configure agent: %w", err)
 	}
 

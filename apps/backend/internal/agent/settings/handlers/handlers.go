@@ -667,7 +667,7 @@ func (h *Handlers) httpCreateAgent(c *gin.Context) {
 		if writeClaudeExactModelAliasConflict(c, err) {
 			return
 		}
-		if errors.Is(err, controller.ErrInvalidProfileEnvVars) || errors.Is(err, controller.ErrInvalidCommandPrefix) ||
+		if errors.Is(err, controller.ErrInvalidCardAgent) || errors.Is(err, controller.ErrInvalidProfileEnvVars) || errors.Is(err, controller.ErrInvalidCommandPrefix) ||
 			errors.Is(err, controller.ErrInvalidProviderConfig) || errors.Is(err, controller.ErrInvalidDevinPermissionIntent) ||
 			errors.Is(err, controller.ErrRequireExactModelNeedsModel) || errors.Is(err, controller.ErrRequireExactModelUnsupported) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

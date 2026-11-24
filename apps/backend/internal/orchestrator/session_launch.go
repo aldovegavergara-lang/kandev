@@ -200,6 +200,7 @@ type continuationCheckpoint struct {
 
 // LaunchSessionRequest is the unified request for session.launch.
 type LaunchSessionRequest struct {
+	Delegate bool `json:"delegate,omitempty"`
 	// reusePreparedPrimary is reserved for the recorded dependency launch consumer.
 	reusePreparedPrimary   bool
 	transientLaunchFailure *transientLaunchFailureIdentity
@@ -487,6 +488,27 @@ func (s *Service) LaunchSession(ctx context.Context, req *LaunchSessionRequest) 
 		return nil, err
 	}
 	ctx = preparedCtx
+	if req.Delegate {
+		if intent != IntentStart || strings.TrimSpace(req.Prompt) == "" || req.AgentProfileID == "" {
+			return nil, errors.New("a delegation requires an agent and an assignment")
+		}
+		info, err := s.agentManager.ResolveAgentProfile(ctx, req.AgentProfileID)
+		if err != nil {
+			return nil, err
+		}
+		if info == nil || info.CardAgent == nil {
+			return nil, errors.New("select a saved delegate")
+		}
+		task, err := s.repo.GetTask(ctx, req.TaskID)
+		if err != nil {
+			return nil, err
+		}
+		if task.WorkspaceID != info.CardAgent.WorkspaceID {
+			return nil, errors.New("named agent belongs to another workspace")
+		}
+		req.ProfileExplicit = true
+		req.PreserveWorkflowSourceBinding = true
+	}
 	if req.QuickChatInitialStart {
 		releaseLifecycleLock, handleStartFailure, err := s.beginQuickChatStartFailureOwnership(ctx, req)
 		if err != nil {

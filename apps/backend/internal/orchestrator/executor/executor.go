@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"io"
 	"strings"
 	"sync"
@@ -544,6 +545,7 @@ type RemoteStatusPollRequest struct {
 
 // AgentProfileInfo contains resolved profile information
 type AgentProfileInfo struct {
+	CardAgent                  *cardagent.Definition
 	ExecutionGrade             string
 	ProfileID                  string
 	ProfileName                string

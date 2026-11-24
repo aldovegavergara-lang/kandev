@@ -264,6 +264,7 @@ function buildProfileUpdatePatch(
     auto_fallback: draft.autoFallback ?? false,
     require_exact_model: draft.requireExactModel ?? false,
     mode: draft.mode,
+    card_agent: draft.cardAgent ?? (savedProfile.cardAgent ? {} : undefined),
     config_options: draft.configOptions ?? {},
     ...permissionsToProfilePatch(draft),
     cli_passthrough: draft.cliPassthrough,

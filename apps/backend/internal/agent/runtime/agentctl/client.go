@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"io"
 	"net"
 	"net/http"
@@ -714,7 +715,7 @@ func (c *Client) BuiltinMCPScopedRoutes() bool {
 // ConfigureAgent configures the agent command. Must be called before Start().
 // continueCommand is optional — when set, the adapter uses it for one-shot follow-up prompts.
 func (c *Client) ConfigureAgent(ctx context.Context, command string, agentArgs []string, env map[string]string, continueCommand string, continueArgs []string, wrapper ...launchwrapper.Spec) error {
-	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, nil, nil, opencode.Runtime{}, wrapper...)
+	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, nil, nil, opencode.Runtime{}, "", wrapper...)
 }
 
 // ConfigureAgentWithEnvironment configures the agent with a complete effective
@@ -722,7 +723,7 @@ func (c *Client) ConfigureAgent(ctx context.Context, command string, agentArgs [
 // block while preserving ordinary instance variables. Use this when the
 // caller has already composed inherited and generated environment sources.
 func (c *Client) ConfigureAgentWithEnvironment(ctx context.Context, command string, agentArgs []string, env map[string]string, continueCommand string, continueArgs []string, wrapper ...launchwrapper.Spec) error {
-	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, true, false, nil, nil, opencode.Runtime{}, wrapper...)
+	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, true, false, nil, nil, opencode.Runtime{}, "", wrapper...)
 }
 
 // ConfigureAgentWithProjectDelivery configures the agent command together with
@@ -730,7 +731,7 @@ func (c *Client) ConfigureAgentWithEnvironment(ctx context.Context, command stri
 // project configuration file. A helper must advertise
 // types.ProjectMCPDeliveryCapability before a caller sends dependent evidence.
 func (c *Client) ConfigureAgentWithProjectDelivery(ctx context.Context, command string, agentArgs []string, env map[string]string, continueCommand string, continueArgs []string, delivery *types.ProjectMCPDelivery, wrapper ...launchwrapper.Spec) error {
-	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, delivery, nil, opencode.Runtime{}, wrapper...)
+	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, delivery, nil, opencode.Runtime{}, "", wrapper...)
 }
 
 // ConfigureAgentWithProjectDeliveryAndInstallContext sends optional
@@ -752,19 +753,19 @@ func (c *Client) ConfigureAgentWithProjectDeliveryAndInstallContext(
 			installContext = nil
 		}
 	}
-	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, delivery, installContext, opencode.Runtime{}, wrapper...)
+	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, delivery, installContext, opencode.Runtime{}, "", wrapper...)
 }
 
 // ConfigureAgentRuntime sends the resolved runtime atomically with its command and environment.
 func (c *Client) ConfigureAgentRuntime(ctx context.Context, command string, agentArgs []string, env map[string]string, continueCommand string, continueArgs []string, runtime opencode.Runtime, wrapper launchwrapper.Spec) error {
-	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, nil, nil, runtime, wrapper)
+	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, nil, nil, runtime, "", wrapper)
 }
 
 // ConfigureAgentRuntimeWithProjectDelivery sends the resolved runtime together
 // with execution-bound project delivery evidence. A helper must advertise
 // types.ProjectMCPDeliveryCapability before a caller sends dependent evidence.
 func (c *Client) ConfigureAgentRuntimeWithProjectDelivery(ctx context.Context, command string, agentArgs []string, env map[string]string, continueCommand string, continueArgs []string, delivery *types.ProjectMCPDelivery, runtime opencode.Runtime, wrapper launchwrapper.Spec) error {
-	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, delivery, nil, runtime, wrapper)
+	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, false, delivery, nil, runtime, "", wrapper)
 }
 
 // ConfigureAgentRuntimeWithProjectDeliveryAndInstallContext sends the resolved
@@ -782,17 +783,23 @@ func (c *Client) ConfigureAgentRuntimeWithProjectDeliveryAndInstallContext(
 	installContext *types.ManagedRuntimeInstallContext,
 	runtime opencode.Runtime,
 	wrapper launchwrapper.Spec,
-	preferACPV2 bool,
+	preferACPV2 bool, folder string,
 ) error {
+	if folder != "" {
+		if err := c.RequireCapability(ctx, cardagent.FolderCapability); err != nil {
+			return err
+		}
+	}
 	if installContext != nil {
 		if err := c.RequireCapability(ctx, types.ManagedRuntimeRepairReuseCapability); err != nil {
 			installContext = nil
 		}
 	}
-	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, preferACPV2, delivery, installContext, runtime, wrapper)
+	return c.configureAgent(ctx, command, agentArgs, env, continueCommand, continueArgs, false, preferACPV2, delivery, installContext, runtime, folder, wrapper)
 }
 
 type configureAgentPayload struct {
+	AgentFolder        string                              `json:"agent_folder,omitempty"`
 	OpenCodeRuntime    opencode.Runtime                    `json:"opencode_runtime,omitzero"`
 	LaunchWrapper      launchwrapper.Spec                  `json:"launch_wrapper,omitzero"`
 	Command            string                              `json:"command"`
@@ -806,7 +813,7 @@ type configureAgentPayload struct {
 	InstallContext     *types.ManagedRuntimeInstallContext `json:"install_context,omitempty"`
 }
 
-func (c *Client) configureAgent(ctx context.Context, command string, agentArgs []string, env map[string]string, continueCommand string, continueArgs []string, replaceEnv, preferACPV2 bool, delivery *types.ProjectMCPDelivery, installContext *types.ManagedRuntimeInstallContext, runtime opencode.Runtime, wrapper ...launchwrapper.Spec) error {
+func (c *Client) configureAgent(ctx context.Context, command string, agentArgs []string, env map[string]string, continueCommand string, continueArgs []string, replaceEnv, preferACPV2 bool, delivery *types.ProjectMCPDelivery, installContext *types.ManagedRuntimeInstallContext, runtime opencode.Runtime, folder string, wrapper ...launchwrapper.Spec) error {
 	ctx, span := tracing.TraceHTTPRequest(ctx, "POST", "/api/v1/agent/configure", c.executionID)
 	defer span.End()
 
@@ -818,6 +825,7 @@ func (c *Client) configureAgent(ctx context.Context, command string, agentArgs [
 		return err
 	}
 	payload := configureAgentPayload{
+		AgentFolder:        folder,
 		OpenCodeRuntime:    runtime,
 		LaunchWrapper:      spec,
 		Command:            command,

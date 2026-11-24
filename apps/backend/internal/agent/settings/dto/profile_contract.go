@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/kandev/kandev/internal/cardagent"
 	"strings"
 
 	"github.com/kandev/kandev/internal/agent/copilotplugins"
@@ -14,20 +15,21 @@ import (
 // creation. Value fields retain the existing create defaults; omitted optional
 // fields are left at their domain defaults.
 type ProfileCreateRequest struct {
-	ExecutionGrade    string             `json:"execution_grade,omitempty"`
-	AgentID           string             `json:"agent_id"`
-	Name              string             `json:"name"`
-	Model             string             `json:"model,omitempty"`
-	FallbackModel     string             `json:"fallback_model,omitempty"`
-	AutoFallback      bool               `json:"auto_fallback,omitempty"`
-	RequireExactModel bool               `json:"require_exact_model,omitempty"`
-	Mode              string             `json:"mode,omitempty"`
-	ConfigOptions     map[string]string  `json:"config_options,omitempty"`
-	AllowIndexing     bool               `json:"allow_indexing,omitempty"`
-	AutoApprove       bool               `json:"auto_approve,omitempty"`
-	CLIPassthrough    bool               `json:"cli_passthrough,omitempty"`
-	CLIFlags          []CLIFlagDTO       `json:"cli_flags,omitempty"`
-	EnvVars           []ProfileEnvVarDTO `json:"env_vars,omitempty"`
+	CardAgent         *cardagent.Definition `json:"card_agent,omitempty"`
+	ExecutionGrade    string                `json:"execution_grade,omitempty"`
+	AgentID           string                `json:"agent_id"`
+	Name              string                `json:"name"`
+	Model             string                `json:"model,omitempty"`
+	FallbackModel     string                `json:"fallback_model,omitempty"`
+	AutoFallback      bool                  `json:"auto_fallback,omitempty"`
+	RequireExactModel bool                  `json:"require_exact_model,omitempty"`
+	Mode              string                `json:"mode,omitempty"`
+	ConfigOptions     map[string]string     `json:"config_options,omitempty"`
+	AllowIndexing     bool                  `json:"allow_indexing,omitempty"`
+	AutoApprove       bool                  `json:"auto_approve,omitempty"`
+	CLIPassthrough    bool                  `json:"cli_passthrough,omitempty"`
+	CLIFlags          []CLIFlagDTO          `json:"cli_flags,omitempty"`
+	EnvVars           []ProfileEnvVarDTO    `json:"env_vars,omitempty"`
 	// DevinSandboxInherited marks an explicit "Use CLI settings" choice on a
 	// new Devin profile. It is request-only and never persisted.
 	DevinSandboxInherited   bool                    `json:"devin_sandbox_inherited,omitempty"`
@@ -47,22 +49,23 @@ type ProfileCreateRequest struct {
 // means that the caller omitted the field. A non-nil pointer preserves an
 // explicit false, empty string, empty map, or empty list.
 type ProfileUpdateRequest struct {
-	ExecutionGrade    *string             `json:"execution_grade,omitempty"`
-	ID                string              `json:"id"`
-	Name              *string             `json:"name,omitempty"`
-	Model             *string             `json:"model,omitempty"`
-	FallbackModel     *string             `json:"fallback_model,omitempty"`
-	AutoFallback      *bool               `json:"auto_fallback,omitempty"`
-	RequireExactModel *bool               `json:"require_exact_model,omitempty"`
-	Mode              *string             `json:"mode,omitempty"`
-	ConfigOptions     *map[string]string  `json:"config_options,omitempty"`
-	AllowIndexing     *bool               `json:"allow_indexing,omitempty"`
-	AutoApprove       *bool               `json:"auto_approve,omitempty"`
-	CLIPassthrough    *bool               `json:"cli_passthrough,omitempty"`
-	Enabled           *bool               `json:"enabled,omitempty"`
-	CLIFlags          *[]CLIFlagDTO       `json:"cli_flags,omitempty"`
-	EnvVars           *[]ProfileEnvVarDTO `json:"env_vars,omitempty"`
-	CommandPrefix     *string             `json:"command_prefix,omitempty"`
+	CardAgent         *cardagent.Definition `json:"card_agent,omitempty"`
+	ExecutionGrade    *string               `json:"execution_grade,omitempty"`
+	ID                string                `json:"id"`
+	Name              *string               `json:"name,omitempty"`
+	Model             *string               `json:"model,omitempty"`
+	FallbackModel     *string               `json:"fallback_model,omitempty"`
+	AutoFallback      *bool                 `json:"auto_fallback,omitempty"`
+	RequireExactModel *bool                 `json:"require_exact_model,omitempty"`
+	Mode              *string               `json:"mode,omitempty"`
+	ConfigOptions     *map[string]string    `json:"config_options,omitempty"`
+	AllowIndexing     *bool                 `json:"allow_indexing,omitempty"`
+	AutoApprove       *bool                 `json:"auto_approve,omitempty"`
+	CLIPassthrough    *bool                 `json:"cli_passthrough,omitempty"`
+	Enabled           *bool                 `json:"enabled,omitempty"`
+	CLIFlags          *[]CLIFlagDTO         `json:"cli_flags,omitempty"`
+	EnvVars           *[]ProfileEnvVarDTO   `json:"env_vars,omitempty"`
+	CommandPrefix     *string               `json:"command_prefix,omitempty"`
 	// Provider* replace their value when non-nil. The settings editor always
 	// sends the full triple on save, so a switch back to Native persists.
 	ProviderKind            *string                 `json:"provider_kind,omitempty"`

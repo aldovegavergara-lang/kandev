@@ -14,6 +14,7 @@ import { Switch } from "@kandev/ui/switch";
 import { useToast } from "@/components/toast-provider";
 import { useSettingsSaveContributor } from "@/components/settings/settings-save-provider";
 import { SettingsCard } from "@/components/settings/settings-card";
+import { CardAgentFields } from "./card-agent-fields";
 import { ProfileFormFields, type ProfileFormData } from "@/components/settings/profile-form-fields";
 import { CursorMcpProfileSelection } from "@/components/settings/cursor-mcp-profile-selection";
 import { profilePermissionValues } from "@/lib/agent-permissions";
@@ -220,6 +221,12 @@ function ProfileSettingsCard({
           lockPassthrough={Boolean(agent.tui_config)}
           hideCustomCLIFlags
         />
+        {!draft.cliPassthrough && (
+          <CardAgentFields
+            value={draft.cardAgent}
+            onChange={(cardAgent) => onDraftChange({ cardAgent })}
+          />
+        )}
         {supportsCursorMcp ? (
           <CursorMcpProfileSelection
             agentId={agent.id}

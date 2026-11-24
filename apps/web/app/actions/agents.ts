@@ -173,6 +173,7 @@ export async function createAgentProfileAction(
     auto_fallback?: boolean;
     require_exact_model?: boolean;
     mode?: string;
+    card_agent?: AgentProfile["cardAgent"] | Record<string, never>;
     config_options?: Record<string, string>;
     cli_passthrough: boolean;
     cursor_mcp_auth_enabled?: boolean;
@@ -209,6 +210,7 @@ export async function updateAgentProfileAction(
     auto_fallback?: boolean;
     require_exact_model?: boolean;
     mode?: string;
+    card_agent?: AgentProfile["cardAgent"] | Record<string, never>;
     config_options?: Record<string, string>;
     allow_indexing?: boolean;
     auto_approve?: boolean;

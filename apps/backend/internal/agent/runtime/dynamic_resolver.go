@@ -17,6 +17,7 @@ import (
 	"github.com/kandev/kandev/internal/agent/runtime/routingpolicy"
 	agentsettingsmodels "github.com/kandev/kandev/internal/agent/settings/models"
 	"github.com/kandev/kandev/internal/agent/settings/store"
+	"github.com/kandev/kandev/internal/cardagent"
 )
 
 var ErrDynamicRoutingDisabled = errors.New("dynamic agent routing is disabled")
@@ -111,6 +112,9 @@ func (r *ProfileExecutionResolver) ValidateProfile(ctx context.Context, profileI
 	profile, err := r.profiles.GetAgentProfile(ctx, profileID)
 	if err != nil {
 		return fmt.Errorf("validate profile %s: %w", profileID, err)
+	}
+	if !profile.Enabled && cardagent.FromSettings(profile.Settings) != nil {
+		return errors.New("saved delegate is disabled")
 	}
 	agent, err := r.profiles.GetAgent(ctx, profile.AgentID)
 	if err != nil {

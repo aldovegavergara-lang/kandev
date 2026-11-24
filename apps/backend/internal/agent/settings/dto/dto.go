@@ -3,6 +3,7 @@ package dto
 import (
 	"github.com/kandev/kandev/internal/agent/agents"
 	"github.com/kandev/kandev/internal/agent/managedruntime"
+	"github.com/kandev/kandev/internal/cardagent"
 	"time"
 
 	"github.com/kandev/kandev/internal/agent/mcpconfig"
@@ -10,14 +11,15 @@ import (
 )
 
 type AgentProfileDTO struct {
-	ExecutionGrade   string `json:"execution_grade"`
-	ID               string `json:"id"`
-	AgentID          string `json:"agent_id"`
-	Kind             string `json:"kind"`
-	Name             string `json:"name"`
-	AgentDisplayName string `json:"agent_display_name"`
-	Model            string `json:"model"`
-	Mode             string `json:"mode,omitempty"`
+	CardAgent        *cardagent.Definition `json:"card_agent,omitempty"`
+	ExecutionGrade   string                `json:"execution_grade"`
+	ID               string                `json:"id"`
+	AgentID          string                `json:"agent_id"`
+	Kind             string                `json:"kind"`
+	Name             string                `json:"name"`
+	AgentDisplayName string                `json:"agent_display_name"`
+	Model            string                `json:"model"`
+	Mode             string                `json:"mode,omitempty"`
 	// FallbackModel is the optional single ACP model ID the runtime switches
 	// to when the start model becomes unavailable. Ignored when
 	// auto_fallback is true.

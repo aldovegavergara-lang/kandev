@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/kandev/kandev/internal/cardagent"
 	"maps"
 	"strconv"
 	"time"
@@ -235,7 +236,7 @@ func (s *Service) publishSessionsCancelled(
 			"new_state":                string(sess.State),
 			"error_message":            reason,
 			"agent_profile_id":         sess.AgentProfileID,
-			"agent_profile_snapshot":   sess.AgentProfileSnapshot,
+			"agent_profile_snapshot":   cardagent.PublicSnapshot(sess.AgentProfileSnapshot),
 			"is_passthrough":           sess.IsPassthrough,
 			"is_primary":               sess.IsPrimary,
 			sessionEventFieldUpdatedAt: sess.UpdatedAt.Format(time.RFC3339Nano),
@@ -281,7 +282,7 @@ func (s *Service) publishSessionRecovered(
 		"new_state":                string(session.State),
 		"error_message":            "",
 		"agent_profile_id":         session.AgentProfileID,
-		"agent_profile_snapshot":   session.AgentProfileSnapshot,
+		"agent_profile_snapshot":   cardagent.PublicSnapshot(session.AgentProfileSnapshot),
 		"is_passthrough":           session.IsPassthrough,
 		"is_primary":               session.IsPrimary,
 		sessionEventFieldUpdatedAt: session.UpdatedAt.Format(time.RFC3339Nano),

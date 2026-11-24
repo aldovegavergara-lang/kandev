@@ -31,6 +31,7 @@ export type LaunchSessionRequest = {
   session_id?: string;
   agent_profile_id?: string;
   profile_explicit?: boolean;
+  delegate?: boolean;
   executor_id?: string;
   executor_profile_id?: string;
   prompt?: string;
