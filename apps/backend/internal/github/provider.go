@@ -2,6 +2,7 @@ package github
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -18,10 +19,10 @@ const rateLimitSeedTimeout = 5 * time.Second
 // attachRateTracker wires the rate tracker into whichever client
 // implementation we ended up with, then seeds initial snapshots. The seed is
 // best-effort — a missing CLI or network blip should not block startup.
-func attachRateTracker(client Client, tracker *RateTracker, log *logger.Logger) {
+func attachRateTracker(client Client, tracker *RateTracker, log *logger.Logger, seed bool) {
 	wireRateTracker(client, tracker)
 	c, ok := client.(*GHClient)
-	if !ok {
+	if !ok || !seed {
 		return
 	}
 	seedCtx, cancel := context.WithTimeout(context.Background(), rateLimitSeedTimeout)
@@ -56,6 +57,7 @@ func Provide(
 	secrets SecretProvider,
 	eventBus bus.EventBus,
 	log *logger.Logger,
+	backgroundLookups bool,
 ) (*Service, func() error, error) {
 	store, err := NewStore(writer, reader)
 	if err != nil {
@@ -63,14 +65,23 @@ func Provide(
 	}
 
 	ctx := context.Background()
-	client, authMethod, err := NewClient(ctx, secrets, log)
+	var client Client
+	authMethod := AuthMethodNone
+	// Discover ambient gh credentials only for installations that use them.
+	// Workspace-specific credentials are resolved by the broker on demand.
+	configured, err := store.hasActiveHostCredential(ctx)
 	if err != nil {
-		// Not fatal — service works with nil client (unauthenticated).
-		log.Warn("GitHub client not available: " + err.Error())
+		log.Debug("cannot check saved GitHub connections", zap.Error(err))
+	}
+	if configured || backgroundLookups || os.Getenv("KANDEV_MOCK_GITHUB") == "true" {
+		client, authMethod, err = NewClient(ctx, secrets, log)
+		if err != nil {
+			log.Warn("GitHub client unavailable", zap.Error(err))
+		}
 	}
 
 	svc := NewService(client, authMethod, secrets, store, eventBus, log)
-	attachRateTracker(client, svc.RateTracker(), log)
+	attachRateTracker(client, svc.RateTracker(), log, backgroundLookups)
 	svc.subscribeTaskEvents()
 
 	cleanup := func() error {

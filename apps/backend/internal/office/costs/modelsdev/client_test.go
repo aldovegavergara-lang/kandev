@@ -881,3 +881,21 @@ func assertNoCacheTemps(t *testing.T, cachePath string) {
 		t.Fatalf("cache temporary files remain: %v", matches)
 	}
 }
+
+// Cache-only mode must never schedule a request, even on a cold cache.
+func TestCacheOnlyPricing(t *testing.T) {
+	client := modelsdev.New(modelsdev.Config{CacheOnly: true, CachePath: filepath.Join(t.TempDir(), "prices.json"),
+		HTTPClient: &http.Client{Transport: forbidTransport{t}}}, logger.Default())
+	synctest.Test(t, func(t *testing.T) {
+		client.LookupForModel(t.Context(), "gpt-4o")
+		client.LookupModelInfo(t.Context(), "gpt-4o")
+		synctest.Wait()
+	})
+}
+
+type forbidTransport struct{ t *testing.T }
+
+func (f forbidTransport) RoundTrip(*http.Request) (*http.Response, error) {
+	f.t.Error("cache-only lookup attempted HTTP")
+	return nil, os.ErrPermission
+}

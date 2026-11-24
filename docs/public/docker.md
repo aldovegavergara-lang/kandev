@@ -33,7 +33,7 @@ Open `http://localhost:38429` and follow logs with:
 docker logs -f kandev
 ```
 
-Kandev ships with its experimental [Authentication & Users](authentication.md) feature disabled, so the default container has no multi-user web login or API authorization boundary. Setting `auth.jwtSecret` does not enable it. Docker's unqualified `-p 38429:38429` publishes on every host interface, so do not use that form on an untrusted network. Use loopback, a private network/VPN, or an authenticated reverse proxy with TLS.
+The server image in this fork enables Kandev authentication and listens on all interfaces inside the container. Publish the host port on loopback while creating the first administrator. Use TLS before offering remote access. See [Authentication & Users](authentication.md).
 
 ## Published images
 

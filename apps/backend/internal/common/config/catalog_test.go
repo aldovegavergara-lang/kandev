@@ -172,6 +172,7 @@ func auditedStartupEnvironmentInventory() []auditedStartupEnvironment {
 		{envVar: "KANDEV_ACP_UNOWNED_PERIOD", class: "catalog"},
 		{envVar: "KANDEV_ACP_DETACHED_EVENT_LIMIT", class: "catalog"},
 		{envVar: "KANDEV_PLAN_COALESCE_WINDOW_MS", class: "catalog"},
+		{envVar: "KANDEV_BACKGROUND_LOOKUPS", class: "catalog"},
 		{envVar: "OTEL_EXPORTER_OTLP_ENDPOINT", class: "catalog"},
 		{envVar: "KANDEV_WEB_PORT", class: "catalog"},
 		{envVar: "KANDEV_HEALTH_TIMEOUT_MS", class: "catalog"},

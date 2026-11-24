@@ -16,6 +16,19 @@ Kandev is a developer workbench that runs agents with access to repositories, to
 - Scope agent and provider credentials to the smallest repository and operation set.
 - Keep human approval before merge, release, deployment, or other irreversible actions.
 
+## Outbound connections
+
+| Action | Destination and data |
+| --- | --- |
+| Open the local board | The browser loads the application, images and WebSocket from the local server. Remote images embedded in board content are blocked. |
+| Start a hosted agent | The CLI can send prompts, selected files and tool results to its configured provider under that account. Agent commands and plugins inherit the network access of their executor. |
+| Enable tracing | Operational metadata goes to the configured OTLP collector. Export is disabled by default. Remote collectors require HTTPS. |
+| Check versions or model prices | Scheduled application and agent CLI checks, startup model discovery, GitHub quota seeding and automatic pricing refresh are disabled by default. Enable them with `KANDEV_BACKGROUND_LOOKUPS=true` and restart. Cached prices remain available while offline. |
+| Install software or browse a catalog | The selected registry or release host receives the request. Installing runtimes and plugins can download executable code. |
+| Connect Git hosting, notifications or an external MCP service | Configured integrations can sync in the background. Their destination receives the content needed for that operation. |
+
+A local process running as your OS user can access an unauthenticated loopback installation. Use an isolated executor with scoped credentials for agents that handle untrusted repositories. SQLite databases are created with owner-only permissions on Unix. Local logs, backups and exports also need a private directory.
+
 ## Choose a deployment boundary
 
 | Use case | Recommended boundary | Avoid |
@@ -25,7 +38,7 @@ Kandev is a developer workbench that runs agents with access to repositories, to
 | A trusted team | Dedicated host or service account, identity-aware proxy, private network, scoped credentials, and separate deployments for different trust groups | Treating the Kandev UI as a tenant or role boundary |
 | Unattended automation | Dedicated agent and executor profiles, narrow repository credentials, workflow limits, and provider-side branch protection | Reusing a developer's broad personal token or enabling unrestricted approval bypasses |
 
-The default backend host is `0.0.0.0`. Plain `kandev`, `kandev run`, and `npx kandev@latest` commands inherit that all-interface bind unless you override it. For local-only access, set `KANDEV_SERVER_HOST=127.0.0.1` before launch; configure an equivalent protected bind for a managed service. Browser origin and CORS checks reduce accidental cross-site access, but they do not identify or authorize a user. `auth.jwtSecret` is compatibility configuration and does not enable product login.
+The backend binds to `127.0.0.1` by default. Network listeners require Kandev authentication. In single-user mode, the production web board and WebSocket must use the same loopback origin, including the port. Remote browser access through a proxy requires Kandev authentication and TLS. The `auth.jwtSecret` compatibility setting alone does not enable login.
 
 ```bash
 KANDEV_SERVER_HOST=127.0.0.1 kandev

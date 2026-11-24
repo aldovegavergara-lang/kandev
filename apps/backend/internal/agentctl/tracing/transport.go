@@ -2,7 +2,6 @@ package tracing
 
 import (
 	"context"
-	"encoding/json"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -78,8 +77,7 @@ func TraceHTTPRequest(ctx context.Context, method, path, executionID string) (co
 func TraceHTTPResponse(span trace.Span, statusCode int, err error) {
 	span.SetAttributes(attribute.Int("http.status_code", statusCode))
 	if err != nil {
-		span.RecordError(err)
-		span.SetStatus(codes.Error, err.Error())
+		span.SetStatus(codes.Error, "request failed")
 	}
 }
 
@@ -102,14 +100,13 @@ func TraceWSRequest(ctx context.Context, action, msgID, executionID, sessionID s
 func TraceWSResponse(span trace.Span, responseType string, err error) {
 	span.SetAttributes(attribute.String("ws.response_type", responseType))
 	if err != nil {
-		span.RecordError(err)
-		span.SetStatus(codes.Error, err.Error())
+		span.SetStatus(codes.Error, "request failed")
 	}
 }
 
 // TraceAgentEvent creates a single span for a received agent event.
-// The raw JSON message is attached as a span event for full observability.
-func TraceAgentEvent(ctx context.Context, eventType, sessionID, executionID string, rawMessage json.RawMessage) {
+// Export size and routing metadata only.
+func TraceAgentEvent(ctx context.Context, eventType, sessionID, executionID string, payloadBytes int) {
 	_, span := transportTracer().Start(ctx, "agent.event."+eventType,
 		trace.WithSpanKind(trace.SpanKindInternal),
 	)
@@ -121,18 +118,8 @@ func TraceAgentEvent(ctx context.Context, eventType, sessionID, executionID stri
 		attribute.String("execution_id", executionID),
 	)
 
-	if len(rawMessage) > 0 {
-		data := string(rawMessage)
-		if len(data) > maxEventDataLen {
-			data = data[:maxEventDataLen] + "...(truncated)"
-		}
-		span.AddEvent("event_data", trace.WithAttributes(
-			attribute.String("data", data),
-		))
-	}
+	span.SetAttributes(attribute.Int("payload.bytes", payloadBytes))
 }
-
-const maxEventDataLen = 8192
 
 // TraceWorkspaceEvent creates a single span for a workspace stream event.
 func TraceWorkspaceEvent(ctx context.Context, msgType, executionID, sessionID string) {
@@ -178,7 +165,6 @@ func TraceMCPDispatch(ctx context.Context, action, msgID, executionID string) (c
 // TraceMCPResponse records the result of an MCP dispatch on the span.
 func TraceMCPResponse(span trace.Span, err error) {
 	if err != nil {
-		span.RecordError(err)
-		span.SetStatus(codes.Error, err.Error())
+		span.SetStatus(codes.Error, "request failed")
 	}
 }

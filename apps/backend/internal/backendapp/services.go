@@ -1447,7 +1447,7 @@ func initGitHubServiceRequired(
 	log *logger.Logger,
 ) (*github.Service, func() error, error) {
 	adapter := &githubSecretAdapter{store: secretsStore}
-	svc, cleanup, err := github.Provide(dbPool.Writer(), dbPool.Reader(), adapter, eventBus, log)
+	svc, cleanup, err := github.Provide(dbPool.Writer(), dbPool.Reader(), adapter, eventBus, log, cfg.Observability.BackgroundLookups)
 	if err != nil {
 		return nil, nil, fmt.Errorf("github store: %w", err)
 	}

@@ -3,64 +3,17 @@ package tracing
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
+	"time"
 )
 
-func TestEndpointHost(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		expected string
-	}{
-		{
-			name:     "strips http prefix",
-			input:    "http://localhost:4318",
-			expected: "localhost:4318",
-		},
-		{
-			name:     "strips https prefix",
-			input:    "https://otel.example.com:4318",
-			expected: "otel.example.com:4318",
-		},
-		{
-			name:     "returns unchanged when no scheme",
-			input:    "localhost:4318",
-			expected: "localhost:4318",
-		},
-		{
-			name:     "handles empty string",
-			input:    "",
-			expected: "",
-		},
-		{
-			name:     "strips trailing slash from http URL",
-			input:    "http://localhost:4318/",
-			expected: "localhost:4318",
-		},
-		{
-			name:     "strips trailing slash from https URL",
-			input:    "https://otel.example.com:4318/",
-			expected: "otel.example.com:4318",
-		},
-		{
-			name:     "strips trailing slash without scheme",
-			input:    "localhost:4318/",
-			expected: "localhost:4318",
-		},
-		{
-			name:     "strips multiple trailing slashes",
-			input:    "http://localhost:4318///",
-			expected: "localhost:4318",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := endpointHost(tt.input)
-			if got != tt.expected {
-				t.Errorf("endpointHost(%q) = %q, want %q", tt.input, got, tt.expected)
-			}
-		})
+func TestTraceEndpoint(t *testing.T) {
+	for raw, want := range map[string]string{"https://collector.example/base": "https://collector.example/base/v1/traces", "collector.example:4318": "https://collector.example:4318/v1/traces", "http://localhost:4318": "http://localhost:4318/v1/traces", "http://[::1]:4318": "http://[::1]:4318/v1/traces", "http://collector.example": "", "https://user@collector.example": "", "https://collector.example/?token=a": "", "": ""} {
+		got, err := traceEndpoint(raw)
+		if got != want || (err != nil) != (want == "") {
+			t.Errorf("%q: %q, %v", raw, got, err)
+		}
 	}
 }
 
@@ -132,11 +85,11 @@ func TestTraceAgentEvent(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("does not panic", func(t *testing.T) {
-		TraceAgentEvent(ctx, "message_chunk", "sess-123", "exec-456", []byte(`{"type":"message_chunk"}`))
+		TraceAgentEvent(ctx, "message_chunk", "sess-123", "exec-456", 24)
 	})
 
 	t.Run("handles empty values", func(t *testing.T) {
-		TraceAgentEvent(ctx, "", "", "", nil)
+		TraceAgentEvent(ctx, "", "", "", 0)
 	})
 }
 
@@ -243,4 +196,20 @@ func TestShutdown(t *testing.T) {
 			t.Errorf("expected nil error, got %v", err)
 		}
 	})
+}
+
+func TestCollectorClientUsesBoundedSingleDestinationTransport(t *testing.T) {
+	t.Setenv("OTEL_EXPORTER_OTLP_TRACES_TIMEOUT", "2500")
+	t.Setenv("OTEL_EXPORTER_OTLP_TIMEOUT", "100")
+	client, err := collectorClient()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if client.Timeout != 2500*time.Millisecond || client.CheckRedirect(nil, nil) != http.ErrUseLastResponse {
+		t.Fatal("unexpected collector policy")
+	}
+	t.Setenv("OTEL_EXPORTER_OTLP_TRACES_CERTIFICATE", t.TempDir()+"/missing")
+	if _, err := collectorClient(); err == nil {
+		t.Fatal("invalid CA should disable export")
+	}
 }

@@ -7,10 +7,19 @@ package tracing
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"errors"
 	"fmt"
+	"net"
+	"net/http"
+	"net/url"
 	"os"
+	"path"
+	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
@@ -55,24 +64,26 @@ func resolvedEndpoint() string {
 func initTracing() {
 	// Always register the W3C propagator so Inject/Extract work
 	// even if this process doesn't export spans.
-	otel.SetTextMapPropagator(
-		propagation.NewCompositeTextMapPropagator(
-			propagation.TraceContext{},
-			propagation.Baggage{},
-		),
-	)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
 
 	endpoint := resolvedEndpoint()
-	if endpoint == "" {
+	if endpoint == "" || strings.EqualFold(os.Getenv("OTEL_SDK_DISABLED"), "true") {
 		return
 	}
 
 	ctx := context.Background()
 
-	exporter, err := otlptracehttp.New(ctx,
-		otlptracehttp.WithEndpoint(endpointHost(endpoint)),
-		otlptracehttp.WithInsecure(),
-	)
+	target, err := traceEndpoint(endpoint)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "kandev: invalid tracing endpoint; use HTTPS or loopback HTTP")
+		return
+	}
+	client, err := collectorClient()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "kandev: invalid OTLP TLS or timeout configuration")
+		return
+	}
+	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL(target), otlptracehttp.WithHTTPClient(client))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "kandev-agentctl: failed to initialize OTel exporter: %v\n", err)
 		return
@@ -93,14 +104,64 @@ func initTracing() {
 	otel.SetTracerProvider(tracerProvider)
 }
 
-// endpointHost strips the scheme and trailing slashes from the endpoint URL for otlptracehttp.
-func endpointHost(endpoint string) string {
-	for _, prefix := range []string{"https://", "http://"} {
-		if strings.HasPrefix(endpoint, prefix) {
-			return strings.TrimRight(endpoint[len(prefix):], "/")
+// Use the configured collector only. A redirect must never forward a POST
+// containing trace metadata or credentials, even between sibling domains.
+func collectorClient() (*http.Client, error) {
+	setting := func(key string) string {
+		if value := os.Getenv("OTEL_EXPORTER_OTLP_TRACES_" + key); value != "" {
+			return value
 		}
+		return os.Getenv("OTEL_EXPORTER_OTLP_" + key)
 	}
-	return strings.TrimRight(endpoint, "/")
+	tlsConfig := &tls.Config{MinVersion: tls.VersionTLS12}
+	if ca := setting("CERTIFICATE"); ca != "" {
+		pem, err := os.ReadFile(ca)
+		if err != nil {
+			return nil, err
+		}
+		roots := x509.NewCertPool()
+		if !roots.AppendCertsFromPEM(pem) {
+			return nil, errors.New("invalid collector CA")
+		}
+		tlsConfig.RootCAs = roots
+	}
+	cert, key := setting("CLIENT_CERTIFICATE"), setting("CLIENT_KEY")
+	if cert != "" || key != "" {
+		pair, err := tls.LoadX509KeyPair(cert, key)
+		if err != nil {
+			return nil, err
+		}
+		tlsConfig.Certificates = []tls.Certificate{pair}
+	}
+	timeout := 10 * time.Second
+	if raw := setting("TIMEOUT"); raw != "" {
+		ms, err := strconv.ParseUint(raw, 10, 32)
+		if err != nil || ms == 0 {
+			return nil, errors.New("invalid collector timeout")
+		}
+		timeout = time.Duration(ms) * time.Millisecond
+	}
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.TLSClientConfig = tlsConfig
+	return &http.Client{Transport: transport, Timeout: timeout, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}, nil
+}
+
+// Preserve the configured protocol and the OTLP base path. Plain HTTP is local-only.
+func traceEndpoint(raw string) (string, error) {
+	if !strings.Contains(raw, "://") {
+		raw = "https://" + raw
+	}
+	u, err := url.Parse(raw)
+	if err != nil || u.Hostname() == "" || u.User != nil || u.RawQuery != "" || u.ForceQuery || u.Fragment != "" {
+		return "", errors.New("invalid collector URL")
+	}
+	local := strings.EqualFold(u.Hostname(), "localhost") || net.ParseIP(u.Hostname()).IsLoopback()
+	if u.Scheme != "https" && !(u.Scheme == "http" && local) {
+		return "", errors.New("collector requires HTTPS")
+	}
+	u.Path = path.Join("/", u.Path, "v1/traces")
+	u.RawPath = ""
+	return u.String(), nil
 }
 
 // Tracer returns a named tracer. No-op when tracing is disabled.

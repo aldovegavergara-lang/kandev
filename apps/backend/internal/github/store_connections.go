@@ -64,6 +64,16 @@ func (s *Store) GetWorkspaceConnectionHealth(ctx context.Context) (WorkspaceConn
 	return health, err
 }
 
+// hasActiveHostCredential reports whether startup needs the host's legacy gh client.
+func (s *Store) hasActiveHostCredential(ctx context.Context) (bool, error) {
+	var active bool
+	err := s.ro.QueryRowxContext(ctx, `SELECT EXISTS (
+ SELECT 1 FROM github_workspace_connections c JOIN workspaces w ON w.id=c.workspace_id
+ WHERE c.status='active' AND c.source IN ('gh_cli','legacy_shared')
+ )`).Scan(&active)
+	return active, err
+}
+
 // GetWorkspaceConnection returns a workspace's automation connection, if any.
 func (s *Store) GetWorkspaceConnection(ctx context.Context, workspaceID string) (*WorkspaceConnection, error) {
 	var connection WorkspaceConnection

@@ -3,65 +3,10 @@ package shared
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"testing"
 
 	"github.com/kandev/kandev/internal/agentctl/types/streams"
 )
-
-func TestTruncate(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		maxLen   int
-		expected string
-	}{
-		{
-			name:     "returns unchanged when under limit",
-			input:    "short",
-			maxLen:   10,
-			expected: "short",
-		},
-		{
-			name:     "returns unchanged when exactly at limit",
-			input:    "exact",
-			maxLen:   5,
-			expected: "exact",
-		},
-		{
-			name:     "truncates with suffix when over limit",
-			input:    "this is a long string that exceeds the limit",
-			maxLen:   10,
-			expected: "this is a ...(truncated)",
-		},
-		{
-			name:     "handles empty string",
-			input:    "",
-			maxLen:   10,
-			expected: "",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := truncate(tt.input, tt.maxLen)
-			if got != tt.expected {
-				t.Errorf("truncate(%q, %d) = %q, want %q", tt.input, tt.maxLen, got, tt.expected)
-			}
-		})
-	}
-
-	// Verify the suffix is correct for truncated output
-	t.Run("truncated output ends with expected suffix", func(t *testing.T) {
-		got := truncate(strings.Repeat("x", 100), 10)
-		if !strings.HasSuffix(got, "...(truncated)") {
-			t.Errorf("truncated output should end with '...(truncated)', got %q", got)
-		}
-		if !strings.HasPrefix(got, strings.Repeat("x", 10)) {
-			t.Errorf("truncated output should start with the first 10 chars")
-		}
-	})
-}
 
 func TestTraceProtocolEvent(t *testing.T) {
 	ctx := context.Background()

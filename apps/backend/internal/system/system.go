@@ -322,9 +322,6 @@ func (s *Service) StartBackground(ctx context.Context) {
 	if s.LogBundles != nil {
 		s.LogBundles.Start(ctx)
 	}
-	if s.Updates != nil {
-		s.Updates.StartPoller(ctx)
-	}
 	if s.StorageRuntime != nil {
 		_ = s.StorageRuntime.Start(ctx)
 	}

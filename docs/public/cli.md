@@ -464,7 +464,7 @@ When it can enumerate non-loopback interfaces, the launcher also prints `network
 
 The `dev`, `start`, and `run` startup banners also print a `version:` line. Its value matches `kandev --version`; an unstamped local build reports `dev`.
 
-The backend's default `server.host` is `0.0.0.0`. That can expose Kandev to other machines on the network, and the current local product path is not an authenticated multi-user boundary. The launcher uses `localhost` for its default local access URL, but the backend still listens on every interface. Bind it to loopback unless remote access is deliberately protected:
+The backend listens on `127.0.0.1` by default. A non-loopback bind requires Kandev authentication. To specify the local address explicitly, use the following command.
 
 ```bash
 KANDEV_SERVER_HOST=127.0.0.1 kandev

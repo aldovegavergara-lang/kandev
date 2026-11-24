@@ -7,6 +7,7 @@ import (
 	"github.com/coder/acp-go-sdk"
 	"github.com/kandev/kandev/internal/agentctl/server/adapter/transport/shared"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.uber.org/zap"
 )
 
@@ -31,7 +32,7 @@ func (a *Adapter) restoreSessionState(
 		Meta:       req.Meta,
 	})
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "agent operation failed")
 	}
 	span.End()
 	var requestErr *acp.RequestError
@@ -54,7 +55,7 @@ func (a *Adapter) loadSessionWithReplay(
 	span.SetAttributes(attribute.String("session_id", string(req.SessionId)))
 	resp, err := conn.LoadSession(ctx, req)
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "agent operation failed")
 	}
 	return resp, err
 }

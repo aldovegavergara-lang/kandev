@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kandev/kandev/internal/common/config"
 )
 
 func TestCORSMiddlewareEchoesOriginForCredentialedRequests(t *testing.T) {
@@ -236,5 +237,44 @@ func TestCORSMiddlewareRejectsCredentialedRequestsFromUnrelatedOrigins(t *testin
 	}
 	if got := rec.Header().Get("Access-Control-Allow-Credentials"); got != "" {
 		t.Fatalf("Access-Control-Allow-Credentials = %q, want no credentialed CORS", got)
+	}
+}
+
+func TestListenerAuthenticationPolicy(t *testing.T) {
+	for _, tc := range []struct {
+		host          string
+		auth, allowed bool
+	}{
+		{"", false, true}, {"127.0.0.1,::1", false, true}, {"0.0.0.0", false, false}, {"::", true, true},
+	} {
+		err := validateListenerAuth(&config.ServerConfig{Host: tc.host}, tc.auth)
+		if (err == nil) != tc.allowed {
+			t.Errorf("host %q auth %v: %v", tc.host, tc.auth, err)
+		}
+	}
+}
+
+func TestSingleUserListenerPolicy(t *testing.T) {
+	for _, tc := range []struct {
+		host, origin string
+		dev, allowed bool
+	}{
+		{"127.0.0.1:8080", "", false, true},
+		{"[::1]:8080", "http://[::1]:8080", false, true},
+		{"example.invalid", "", false, false},
+		{"localhost:8080", "http://localhost:5173", false, false},
+		{"localhost:8080", "http://localhost:5173", true, true},
+		{"localhost:8080", "null", false, false},
+	} {
+		router := gin.New()
+		router.Use(localListenerGuard(tc.dev), corsMiddleware())
+		router.GET("/", func(c *gin.Context) { c.Status(http.StatusOK) })
+		req := httptest.NewRequest(http.MethodGet, "http://"+tc.host+"/", nil)
+		req.Header.Set("Origin", tc.origin)
+		rr := httptest.NewRecorder()
+		router.ServeHTTP(rr, req)
+		if (rr.Code == http.StatusOK) != tc.allowed {
+			t.Errorf("host %q origin %q dev %v: %d", tc.host, tc.origin, tc.dev, rr.Code)
+		}
 	}
 }

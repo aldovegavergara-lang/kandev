@@ -19,7 +19,7 @@ func OtelTracing(serverName string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := c.FullPath()
 		if path == "" {
-			path = c.Request.URL.Path
+			path = "unmatched"
 		}
 		spanName := fmt.Sprintf("%s %s", c.Request.Method, path)
 

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 
 	"github.com/kandev/kandev/internal/auth"
 	"github.com/kandev/kandev/internal/auth/authn"
@@ -215,21 +214,16 @@ func newWorkspaceOwnerResolver(taskRepo *sqliterepo.Repository) gateways.Workspa
 	}
 }
 
-// warnIfExposedWithoutAuth surfaces the fail-closed nudge promised by
-// ServerConfig.NonLoopbackBinds: a server reachable off-box without
-// authentication gets a prominent startup warning.
-func warnIfExposedWithoutAuth(cfg *config.Config, svc *auth.Service, log *logger.Logger) {
-	if svc == nil || svc.Mode() != auth.ModeDisabled {
-		return
+// validateListenerAuth requires an authenticated service for network listeners.
+func validateListenerAuth(server *config.ServerConfig, authenticated bool) error {
+	binds, err := server.NonLoopbackBinds()
+	if err != nil {
+		return err
 	}
-	binds, err := cfg.Server.NonLoopbackBinds()
-	if err != nil || len(binds) == 0 {
-		return
+	if !authenticated && len(binds) > 0 {
+		return errors.New("network listeners require authentication: enable KANDEV_FEATURES_AUTH or bind to 127.0.0.1")
 	}
-	log.Warn("server is reachable on non-loopback interfaces WITHOUT authentication; "+
-		"enable the Authentication feature toggle (Settings > System > Feature Toggles) "+
-		"or set KANDEV_FEATURES_AUTH=true",
-		zap.Strings("binds", binds))
+	return nil
 }
 
 func wireExecutorAdmission(authSvc *auth.Service, taskSvc *taskservice.Service, manager interface {

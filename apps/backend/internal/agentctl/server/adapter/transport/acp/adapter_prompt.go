@@ -15,6 +15,7 @@ import (
 	"github.com/kandev/kandev/internal/agentctl/types/streams"
 	v1 "github.com/kandev/kandev/pkg/api/v1"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.uber.org/zap"
 )
 
@@ -212,7 +213,7 @@ func (a *Adapter) sendPrompt(
 	}()
 
 	if waitErr := a.waitForPromptRPCAfterUserCancel(turn, sessionID); waitErr != nil {
-		promptSpan.RecordError(waitErr)
+		promptSpan.SetStatus(codes.Error, "agent operation failed")
 		promptSpan.End()
 		a.clearPromptTraceCtx(turn)
 		return waitErr
@@ -224,7 +225,7 @@ func (a *Adapter) sendPrompt(
 	a.clearPromptTraceCtx(turn)
 	stopReason := ""
 	if err != nil {
-		promptSpan.RecordError(err)
+		promptSpan.SetStatus(codes.Error, "agent operation failed")
 	} else {
 		stopReason = string(resp.StopReason)
 		promptSpan.SetAttributes(attribute.String("stop_reason", stopReason))
@@ -736,7 +737,7 @@ func (a *Adapter) Cancel(ctx context.Context) error {
 		a.waitForClaudeCancelCleanup(ctx, sessionID)
 	}
 	if cancelErr != nil {
-		span.RecordError(cancelErr)
+		span.SetStatus(codes.Error, "agent operation failed")
 		// Still wake the in-flight prompt waiter so sendPrompt can exit within
 		// promptCancelJoinTimeout rather than blocking the gate forever. The
 		// timeout branch in waitForPromptRPCAfterUserCancel will cancel
@@ -747,7 +748,7 @@ func (a *Adapter) Cancel(ctx context.Context) error {
 
 	turn := a.signalPromptTurnAbort()
 	if err := a.waitForPromptRPCAfterCancel(turn); err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "agent operation failed")
 		a.logger.Warn("session/cancel sent but in-flight prompt did not end",
 			zap.String("session_id", sessionID),
 			zap.Error(err))

@@ -38,6 +38,7 @@ const DefaultTTL = 24 * time.Hour
 // in-memory index. Workspaces running only claude-acp never trip a
 // fetch because Layer A handles every event before Lookup is reached.
 type Client struct {
+	cacheOnly  bool
 	cachePath  string
 	url        string
 	ttl        time.Duration
@@ -68,6 +69,7 @@ type ModelInfo struct {
 
 // Config bundles construction parameters.
 type Config struct {
+	CacheOnly  bool
 	CachePath  string
 	URL        string
 	TTL        time.Duration
@@ -89,6 +91,7 @@ func New(cfg Config, log *logger.Logger) *Client {
 		cfg.HTTPClient = &http.Client{Timeout: 30 * time.Second}
 	}
 	return &Client{
+		cacheOnly:  cfg.CacheOnly,
 		cachePath:  cfg.CachePath,
 		url:        cfg.URL,
 		ttl:        cfg.TTL,
@@ -338,6 +341,9 @@ func (c *Client) maybeRefresh(ctx context.Context) {
 // result is still observed asynchronously, so stale lookups remain nonblocking.
 // Callers choose whether the refresh should inherit or detach from their context.
 func (c *Client) startBackgroundRefresh(ctx context.Context) {
+	if c.cacheOnly {
+		return
+	}
 	result := c.refreshResult(ctx)
 	go func() {
 		if err := (<-result).Err; err != nil {

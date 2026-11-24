@@ -104,7 +104,9 @@ VOLUME ["/data"]
 # Environment defaults for containerized operation.
 # NPM_CONFIG_PREFIX points npm global installs at the PV so user-installed
 # agent CLIs (claude-code, codex, auggie, ...) survive pod restarts.
-ENV KANDEV_NO_BROWSER=1 \
+ENV KANDEV_SERVER_HOST=0.0.0.0 \
+    KANDEV_FEATURES_AUTH=true \
+    KANDEV_NO_BROWSER=1 \
     KANDEV_HOME_DIR=/data \
     KANDEV_DOCKER_ENABLED=false \
     HOME=/data/home \

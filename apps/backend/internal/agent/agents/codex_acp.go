@@ -49,7 +49,7 @@ type CodexACP struct {
 var codexPassthroughPermSettings = map[string]PermissionSetting{
 	PermissionKeyAutoApprove: {
 		Supported:    true,
-		Default:      true,
+		Default:      false,
 		Label:        "Auto approve",
 		Description:  "Skip command approval prompts (--ask-for-approval never)",
 		ApplyMethod:  PermissionApplyMethodCLIFlag,

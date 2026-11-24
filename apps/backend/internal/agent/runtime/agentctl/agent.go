@@ -934,7 +934,7 @@ func (c *Client) readUpdatesStream(
 			})
 		}
 
-		tracing.TraceAgentEvent(ctx, event.Type, event.SessionID, c.executionID, message)
+		tracing.TraceAgentEvent(ctx, event.Type, event.SessionID, c.executionID, len(message))
 		stage.recordRead()
 		// Hand off to the ordered worker rather than running handler inline.
 		// A full bounded queue closes the stream so retained events can be

@@ -8,13 +8,13 @@ status: experimental
 
 Kandev ships as a single-user local tool with authentication **disabled**: nothing changes for laptop installs. When several people share one Kandev server, enable authentication to give each person their own account and their own private workspaces.
 
-Authentication is an **experimental runtime feature toggle** and is disabled in every shipped profile. It uses the same system as the other feature flags, so there is no separate "Authentication" configuration page.
+Authentication is an **experimental runtime feature toggle** and is disabled in local profiles and enabled in the server container. It uses the same system as the other feature flags, so there is no separate "Authentication" configuration page.
 
 ## Quick checklist
 
-1. Keep authentication off only for a single-user laptop bound to loopback or another private listener.
+1. Keep authentication off only for a single-user laptop bound to loopback.
 2. For any server reachable by other users or networks, enable **Authentication & users** and restart.
-3. Create the first admin immediately after setup mode appears.
+3. Restrict access to the setup screen until you have created the first admin.
 4. Use personal access tokens for scripts and external MCP clients.
 5. Keep TLS, filesystem permissions, and agent credentials as separate security boundaries.
 
@@ -44,7 +44,7 @@ The instance boots into setup mode and the **first visitor** creates the admin a
 
 To turn authentication **off** again, an admin flips the same toggle off (and restarts), or the environment variable is unset. Ownership data is retained.
 
-A server that listens on non-loopback interfaces with authentication disabled logs a startup warning.
+Startup refuses a non-loopback listener with authentication disabled. The server container enables authentication and expects you to complete the first-admin setup.
 
 ## Users and invites
 

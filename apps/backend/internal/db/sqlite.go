@@ -65,6 +65,14 @@ func OpenSQLite(dbPath string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to create database file: %w", err)
 	}
 
+	// Old WAL, SHM and rollback journals can outlive an upgrade and retain the
+	// permissions of the previously opened database.
+	for _, suffix := range []string{"-wal", "-shm", "-journal"} {
+		if err := restrictExistingSQLiteJournal(normalizedPath + suffix); err != nil {
+			return nil, fmt.Errorf("failed to protect SQLite journal: %w", err)
+		}
+	}
+
 	// Writer DSN settings:
 	// - foreign_keys=on: enforce FK constraints consistently.
 	// - busy_timeout: wait briefly on locks to reduce transient "database is locked".
@@ -137,15 +145,52 @@ func ensureSQLiteDir(dbPath string) error {
 	if dir == "." || dir == "" {
 		return nil
 	}
-	return os.MkdirAll(dir, 0o755)
+	return os.MkdirAll(dir, 0o700)
 }
 
 func ensureSQLiteFile(dbPath string) error {
-	file, err := os.OpenFile(dbPath, os.O_RDWR|os.O_CREATE, 0o644)
+	file, err := os.OpenFile(dbPath, os.O_RDWR|os.O_CREATE, 0o600)
 	if err != nil {
 		return err
 	}
+	// Tighten databases created by earlier versions on the descriptor we opened.
+	if err := file.Chmod(0o600); err != nil {
+		_ = file.Close()
+		return err
+	}
 	return file.Close()
+}
+
+func restrictExistingSQLiteJournal(path string) error {
+	info, err := os.Lstat(path)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if !info.Mode().IsRegular() {
+		return fmt.Errorf("unexpected SQLite journal file type: %s", path)
+	}
+	if info.Mode().Perm()&0o077 == 0 {
+		return nil
+	}
+	file, err := os.Open(path)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	opened, err := file.Stat()
+	if err != nil {
+		return err
+	}
+	if !os.SameFile(info, opened) {
+		return fmt.Errorf("SQLite journal changed while securing %s", path)
+	}
+	return file.Chmod(0o600)
 }
 
 func normalizeSQLitePath(dbPath string) string {

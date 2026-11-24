@@ -14,6 +14,7 @@ import (
 	"github.com/kandev/kandev/internal/agentctl/server/adapter/transport/shared"
 	"github.com/kandev/kandev/internal/agentctl/types"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.uber.org/zap"
 )
 
@@ -373,19 +374,18 @@ func (c *Client) resolvePath(reqPath string) (string, error) {
 func (c *Client) ReadTextFile(ctx context.Context, p acp.ReadTextFileRequest) (acp.ReadTextFileResponse, error) {
 	_, span := shared.TraceProtocolRequest(ctx, shared.ProtocolACP, "", "request.read_file")
 	defer span.End()
-	span.SetAttributes(attribute.String("path", p.Path))
 
 	c.logger.Debug("reading file", zap.String("path", p.Path))
 
 	filePath, err := c.resolvePath(p.Path)
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "operation failed")
 		return acp.ReadTextFileResponse{}, err
 	}
 
 	b, err := os.ReadFile(filePath)
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "operation failed")
 		return acp.ReadTextFileResponse{}, err
 	}
 
@@ -417,7 +417,6 @@ func (c *Client) WriteTextFile(ctx context.Context, p acp.WriteTextFileRequest) 
 	_, span := shared.TraceProtocolRequest(ctx, shared.ProtocolACP, "", "request.write_file")
 	defer span.End()
 	span.SetAttributes(
-		attribute.String("path", p.Path),
 		attribute.Int("content_length", len(p.Content)),
 	)
 
@@ -425,21 +424,21 @@ func (c *Client) WriteTextFile(ctx context.Context, p acp.WriteTextFileRequest) 
 
 	filePath, err := c.resolvePath(p.Path)
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "operation failed")
 		return acp.WriteTextFileResponse{}, err
 	}
 
 	// Create directory if needed
 	if dir := filepath.Dir(filePath); dir != "" {
 		if err := os.MkdirAll(dir, 0o755); err != nil {
-			span.RecordError(err)
+			span.SetStatus(codes.Error, "operation failed")
 			return acp.WriteTextFileResponse{}, err
 		}
 	}
 
 	err = os.WriteFile(filePath, []byte(p.Content), 0o644)
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "operation failed")
 	}
 	return acp.WriteTextFileResponse{}, err
 }
@@ -448,7 +447,6 @@ func (c *Client) WriteTextFile(ctx context.Context, p acp.WriteTextFileRequest) 
 func (c *Client) CreateTerminal(ctx context.Context, p acp.CreateTerminalRequest) (acp.CreateTerminalResponse, error) {
 	_, span := shared.TraceProtocolRequest(ctx, shared.ProtocolACP, "", "request.create_terminal")
 	defer span.End()
-	span.SetAttributes(attribute.String("command", p.Command))
 
 	c.logger.Debug("create terminal request",
 		zap.String("command", p.Command),
@@ -470,7 +468,7 @@ func (c *Client) CreateTerminal(ctx context.Context, p acp.CreateTerminalRequest
 
 	id, err := c.terminals.Create(p.Command, p.Args, cwd, env, limit)
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "operation failed")
 		return acp.CreateTerminalResponse{}, err
 	}
 	return acp.CreateTerminalResponse{TerminalId: acp.TerminalId(id)}, nil
@@ -484,7 +482,7 @@ func (c *Client) KillTerminal(ctx context.Context, p acp.KillTerminalRequest) (a
 	span.SetAttributes(attribute.String("terminal_id", terminalID))
 
 	if err := c.terminals.Kill(terminalID); err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "operation failed")
 		return acp.KillTerminalResponse{}, err
 	}
 	return acp.KillTerminalResponse{}, nil
@@ -499,7 +497,7 @@ func (c *Client) TerminalOutput(ctx context.Context, p acp.TerminalOutputRequest
 
 	output, truncated, exitCode, signal, err := c.terminals.Output(terminalID)
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "operation failed")
 		return acp.TerminalOutputResponse{}, err
 	}
 
@@ -536,7 +534,7 @@ func (c *Client) WaitForTerminalExit(ctx context.Context, p acp.WaitForTerminalE
 
 	exitCode, signal, err := c.terminals.WaitForExit(terminalID)
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "operation failed")
 		return acp.WaitForTerminalExitResponse{}, err
 	}
 	return acp.WaitForTerminalExitResponse{ExitCode: exitCode, Signal: signal}, nil

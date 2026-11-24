@@ -12,8 +12,7 @@ import (
 )
 
 const (
-	tracerName      = "kandev-agentctl"
-	maxAttrValueLen = 8192 // 8KB truncation for span event payloads
+	tracerName = "kandev-agentctl"
 )
 
 // noopTracer is a cached no-op tracer to avoid allocating a new one on every call.
@@ -35,8 +34,7 @@ func ShutdownTracing(ctx context.Context) error {
 }
 
 // TraceProtocolEvent creates a single span for a received protocol notification.
-// Two events are attached: "raw" with the original protocol JSON and "normalized"
-// with the serialized AgentEvent, allowing side-by-side comparison in Jaeger/Tempo.
+// Protocol bodies remain local, including when debug logging is enabled.
 func TraceProtocolEvent(
 	ctx context.Context,
 	protocol, agentID string,
@@ -63,25 +61,7 @@ func TraceProtocolEvent(
 		span.SetAttributes(attribute.String("session_id", normalized.SessionID))
 	}
 
-	// Attach raw protocol JSON as an event
-	if len(rawData) > 0 {
-		span.AddEvent("raw", trace.WithAttributes(
-			attribute.String("data", truncate(string(rawData), maxAttrValueLen)),
-		))
-	}
-
-	// Attach normalized AgentEvent as an event
-	if normalized != nil {
-		if normJSON, err := json.Marshal(normalized); err == nil {
-			span.AddEvent("normalized", trace.WithAttributes(
-				attribute.String("data", truncate(string(normJSON), maxAttrValueLen)),
-			))
-		}
-	} else {
-		span.AddEvent("normalized", trace.WithAttributes(
-			attribute.Bool("conversion_failed", true),
-		))
-	}
+	span.SetAttributes(attribute.Int("payload.bytes", len(rawData)), attribute.Bool("converted", normalized != nil))
 }
 
 // TraceProtocolRequest starts a span for an outgoing protocol request.
@@ -101,11 +81,4 @@ func TraceProtocolRequest(
 	)
 
 	return ctx, span
-}
-
-func truncate(s string, maxLen int) string {
-	if len(s) <= maxLen {
-		return s
-	}
-	return s[:maxLen] + "...(truncated)"
 }

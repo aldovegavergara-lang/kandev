@@ -56,7 +56,7 @@ const (
 
 var startupCatalog = []CatalogEntry{
 	{Key: "homeDir", EnvVars: []string{"KANDEV_HOME_DIR"}, Owner: "common/config", Default: "~/.kandev"},
-	{Key: "server.host", EnvVars: []string{"KANDEV_SERVER_HOST"}, Owner: "backend", Default: "0.0.0.0"},
+	{Key: "server.host", EnvVars: []string{"KANDEV_SERVER_HOST"}, Owner: "backend", Default: defaultServerHost},
 	{Key: "server.port", EnvVars: []string{"KANDEV_SERVER_PORT", "KANDEV_BACKEND_PORT", "KANDEV_PORT"}, Owner: "launcher/backend", Default: "38429"},
 	{Key: "server.readTimeout", EnvVars: []string{"KANDEV_SERVER_READTIMEOUT"}, Owner: "backend", Default: "30"},
 	{Key: "server.writeTimeout", EnvVars: []string{"KANDEV_SERVER_WRITETIMEOUT"}, Owner: "backend", Default: "30"},
@@ -141,6 +141,7 @@ var startupCatalog = []CatalogEntry{
 	{Key: "agentctl.unownedPeriod", EnvVars: []string{"KANDEV_ACP_UNOWNED_PERIOD"}, Owner: "agentctl", Default: "10m"},
 	{Key: "agentctl.detachedEventLimit", EnvVars: []string{"KANDEV_ACP_DETACHED_EVENT_LIMIT"}, Owner: "agentctl", Default: "100"},
 	{Key: "planning.coalesceWindowMs", EnvVars: []string{"KANDEV_PLAN_COALESCE_WINDOW_MS"}, Owner: "planning", Default: "300000"},
+	{Key: "observability.backgroundLookups", EnvVars: []string{"KANDEV_BACKGROUND_LOOKUPS"}, Owner: "backend", Default: "false"},
 	{Key: "observability.otlpEndpoint", EnvVars: []string{"OTEL_EXPORTER_OTLP_ENDPOINT"}, Owner: "observability", Default: "", Sensitive: true},
 	{Key: "launcher.webPort", EnvVars: []string{"KANDEV_WEB_PORT"}, Owner: "launcher", Default: "automatic"},
 	{Key: "launcher.healthTimeoutMs", EnvVars: []string{"KANDEV_HEALTH_TIMEOUT_MS"}, Owner: "launcher", Default: "45000"},

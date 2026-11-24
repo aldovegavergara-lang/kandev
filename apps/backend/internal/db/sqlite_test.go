@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -443,4 +444,28 @@ func TestSQLiteReaderPoolSize(t *testing.T) {
 		require.NoError(t, conn.Close())
 	}
 	require.Equal(t, 7, reader.Stats().Idle, "configured idle capacity must be retained")
+}
+
+func TestSQLiteWriterRestrictsLegacyDatabasePermissions(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX file modes")
+	}
+	path := filepath.Join(t.TempDir(), "existing.db")
+	require.NoError(t, os.WriteFile(path, nil, 0o644))
+	require.NoError(t, os.Chmod(path, 0o644))
+	for _, suffix := range []string{"-wal", "-shm", "-journal"} {
+		require.NoError(t, os.WriteFile(path+suffix, nil, 0o644))
+		require.NoError(t, os.Chmod(path+suffix, 0o644))
+	}
+	writer, err := internaldb.OpenSQLite(path)
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = writer.Close() })
+	info, err := os.Stat(path)
+	require.NoError(t, err)
+	require.Equal(t, os.FileMode(0o600), info.Mode().Perm())
+	for _, suffix := range []string{"-wal", "-shm", "-journal"} {
+		journal, err := os.Stat(path + suffix)
+		require.NoError(t, err)
+		require.Equal(t, os.FileMode(0o600), journal.Mode().Perm())
+	}
 }

@@ -33,6 +33,8 @@ function parseCssTime(value: string): number | null {
  * Cancels owned motion and severs the effect-to-target relationship.
  */
 function releaseAnimation(animation: Animation): void {
+  // Cancel rejects the current completion promise with AbortError.
+  void animation.finished?.catch(() => undefined);
   animation.cancel();
   animation.effect = null;
 }

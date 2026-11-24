@@ -92,7 +92,7 @@ Use one of these boundaries:
 | Multiple people or less-trusted devices | Private network or authenticated TLS proxy | Required |
 | Public internet | Do not expose Kandev directly | Required behind a protected TLS proxy |
 
-When authentication is disabled, Kandev gives every reachable client one synthetic administrator identity.
+For a remote browser or reverse proxy, enable Kandev authentication before setup. When authentication is disabled, Kandev gives every reachable client one synthetic administrator identity.
 
 Enable [Authentication and Users](authentication.md) for accounts, private workspaces, sessions, or personal access tokens.
 
@@ -221,7 +221,7 @@ Read the [Cloudflare Tunnel guide](https://developers.cloudflare.com/cloudflare-
 If the VPN gives the host a stable address, bind Kandev to that address:
 
 ```bash
-KANDEV_SERVER_HOST=100.100.100.100 KANDEV_BACKEND_PORT=38429 kandev
+KANDEV_FEATURES_AUTH=true KANDEV_SERVER_HOST=100.100.100.100 KANDEV_BACKEND_PORT=38429 kandev
 ```
 
 Replace the example address with the private VPN address. Then open `http://100.100.100.100:38429` from the connected phone.
@@ -229,7 +229,7 @@ Replace the example address with the private VPN address. Then open `http://100.
 Some VPNs require an all-interface bind:
 
 ```bash
-KANDEV_SERVER_HOST=0.0.0.0 KANDEV_BACKEND_PORT=38429 kandev
+KANDEV_FEATURES_AUTH=true KANDEV_SERVER_HOST=0.0.0.0 KANDEV_BACKEND_PORT=38429 kandev
 ```
 
 `0.0.0.0` also listens on LAN and public interfaces. A Tailscale grant does not control traffic that arrives outside Tailscale.

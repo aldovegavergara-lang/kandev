@@ -180,6 +180,17 @@ func pathWithinDirectory(root, path string) bool {
 // consumers (backup, output, child environment, supervisor paths) resolve
 // them consistently regardless of the launcher's CWD.
 func normalizeDevDatabaseTarget(target devDatabaseTarget) (devDatabaseTarget, error) {
+	// Some systems can return a cached path for an already removed working directory.
+	// Reject it before deriving child paths or recreating state at that name.
+	if !filepath.IsAbs(target.path) || !filepath.IsAbs(target.homeDir) {
+		cwd, err := os.Getwd()
+		if err != nil {
+			return devDatabaseTarget{}, fmt.Errorf("resolve working directory: %w", err)
+		}
+		if _, err = os.Stat(cwd); err != nil {
+			return devDatabaseTarget{}, fmt.Errorf("inspect working directory: %w", err)
+		}
+	}
 	absPath, err := filepath.Abs(target.path)
 	if err != nil {
 		return devDatabaseTarget{}, fmt.Errorf("resolve database path: %w", err)

@@ -420,6 +420,7 @@ func applyStartupEnvironment(cfg *Config, envSnapshot map[string]string, sources
 	applyPositiveIntEnv("office.selfTriggerAllowance", &cfg.Office.SelfTriggerAllowance, 3, envSnapshot, sources)
 	applyPositiveIntEnv("office.selfTriggerTotalAllowance", &cfg.Office.SelfTriggerTotalAllowance, 8, envSnapshot, sources)
 	applyPositiveIntEnv("office.gateFailureThreshold", &cfg.Office.GateFailureThreshold, 3, envSnapshot, sources)
+	applyBoolEnv("observability.backgroundLookups", &cfg.Observability.BackgroundLookups, false, envSnapshot, sources)
 	applyStringEnvAllowEmpty("observability.otlpEndpoint", &cfg.Observability.OTLPEndpoint, envSnapshot, sources)
 	applyBoundedIntEnv("launcher.webPort", &cfg.Launcher.WebPort, 0, 1, 65535, envSnapshot, sources)
 	applyPositiveIntEnv("launcher.healthTimeoutMs", &cfg.Launcher.HealthTimeoutMs, launcherHealthTimeoutDefault(), envSnapshot, sources)

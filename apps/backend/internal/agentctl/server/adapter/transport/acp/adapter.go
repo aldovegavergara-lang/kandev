@@ -21,6 +21,7 @@ import (
 	"github.com/kandev/kandev/internal/agentctl/types/streams"
 	"github.com/kandev/kandev/internal/common/logger"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.uber.org/zap"
 )
 
@@ -714,7 +715,7 @@ func (a *Adapter) Initialize(ctx context.Context) error {
 		ClientInfo:         clientInfoForAgent(a.agentID, a.cfg.AuthPolicy),
 	})
 	if err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "agent operation failed")
 		return fmt.Errorf("ACP initialize handshake failed: %w", err)
 	}
 
@@ -776,11 +777,11 @@ func (a *Adapter) Initialize(ctx context.Context) error {
 	})
 
 	if err := a.applyProviderGatewayAuth(ctx); err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "agent operation failed")
 		return err
 	}
 	if err := a.applyAntigravityPersonalAuth(ctx, resp); err != nil {
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "agent operation failed")
 		return err
 	}
 

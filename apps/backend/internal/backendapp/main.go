@@ -478,7 +478,10 @@ func startServices( //nolint:cyclop
 		log.Error("Failed to initialize auth service", zap.Error(err))
 		return false
 	}
-	warnIfExposedWithoutAuth(cfg, services.Auth, log)
+	if err := validateListenerAuth(&cfg.Server, services.Auth.Mode() != auth.ModeDisabled); err != nil {
+		log.Error("Refusing unsafe listener", zap.Error(err))
+		return false
+	}
 	taskservice.SetTenancyEnforced(cfg.Features.MultiTenancy)
 	if services.Org != nil && services.Org.Enabled() {
 		services.Auth.SetAdminCreatedHook(services.Org.ClaimSetupAdmin)
@@ -1269,7 +1272,9 @@ func startGatewayAndServe(
 	})
 	// Read each installed vendor CLI's model catalogue once, off the request
 	// path, so the first settings page load serves a discovered list.
-	go agentSettingsController.WarmHostCLIModels(ctx)
+	if cfg.Observability.BackgroundLookups {
+		go agentSettingsController.WarmHostCLIModels(ctx)
+	}
 	profileReconciler := agentsettingscontroller.NewProfileReconciler(hostUtilityMgr, agentRegistry, repos.AgentSettings, log)
 
 	// Wire Host.InvokeUtilityAgent at the first point where the sessionless
@@ -1637,14 +1642,21 @@ func startGatewayAndServe(
 	if e2eRuntimeUpdateHooks != nil {
 		runtimeUpdateReadiness = e2eRuntimeUpdateHooks.startupReadiness(ctx, hostUtilityReady)
 	}
-	stopRuntimeUpdates := agentSettingsController.StartRuntimeUpdateBackground(ctx, runtimeUpdateReadiness)
-	stopRuntimeUpdatesCleanup := func() error { stopRuntimeUpdates(); return nil }
-	addCleanup(stopRuntimeUpdatesCleanup)
-	restoreCleanups = append(restoreCleanups, stopRuntimeUpdatesCleanup)
-	gateway.Hub.AddUserSubscriptionListener(func(string) {
-		agentSettingsController.RequestRuntimeUpdateReplay()
+	if cfg.Observability.BackgroundLookups || e2eRuntimeUpdateHooks != nil {
+		stopRuntimeUpdates := agentSettingsController.StartRuntimeUpdateBackground(ctx, runtimeUpdateReadiness)
+		stopRuntimeUpdatesCleanup := func() error { stopRuntimeUpdates(); return nil }
+		addCleanup(stopRuntimeUpdatesCleanup)
+		restoreCleanups = append(restoreCleanups, stopRuntimeUpdatesCleanup)
+		gateway.Hub.AddUserSubscriptionListener(func(string) {
+			agentSettingsController.RequestRuntimeUpdateReplay()
+		})
+	}
+	startup.AfterReady(ctx, func() {
+		systemSvc.StartBackground(ctx)
+		if cfg.Observability.BackgroundLookups && systemSvc.Updates != nil {
+			systemSvc.Updates.StartPoller(ctx)
+		}
 	})
-	startup.AfterReady(ctx, func() { systemSvc.StartBackground(ctx) })
 	addCleanup(func() error { systemSvc.StopBackground(); return nil })
 	gateways.RegisterSystemNotifications(processRuntimeContext(ctx), eventBus, gateway.Hub, log)
 	gateways.RegisterAgentRuntimeNotifications(ctx, eventBus, gateway.Hub, func() (any, bool) {
@@ -1785,6 +1797,7 @@ func constructOfficeServices(
 	modelsdevCachePath := filepath.Join(cfg.ResolvedHomeDir(), "cache", "models-dev.json")
 	pricingLookup := officemodelsdev.New(officemodelsdev.Config{
 		CachePath: modelsdevCachePath,
+		CacheOnly: !cfg.Observability.BackgroundLookups,
 	}, log)
 
 	// The ledger writer is the sole writer of task_sessions' usage rollup
@@ -3157,6 +3170,9 @@ func buildHTTPServer(
 	router.Use(httpmw.RequestLogger(log, kandevName))
 	router.Use(httpmw.OtelTracing(kandevName))
 	router.Use(gin.Recovery())
+	if !cfg.Features.Auth {
+		router.Use(localListenerGuard(cfg.Debug.DevMode))
+	}
 	router.Use(corsMiddleware())
 	// Generate the interim-settings interlock token before touching any
 	// service deps, so a failure here aborts early (the test path passes nil

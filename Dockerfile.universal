@@ -29,7 +29,7 @@ USER root
 # or run `npx playwright@<version> install-deps --dry-run` to diff. (Tracked
 # only via this comment, not an ARG, since the apt package names are hardcoded
 # below and a build-arg override would silently disagree with what's installed.)
-ARG GO_VERSION=1.26.3
+ARG GO_VERSION=1.27.4
 ARG GOLANGCI_LINT_VERSION=1.62.0
 ARG PNPM_VERSION=9.15.9
 

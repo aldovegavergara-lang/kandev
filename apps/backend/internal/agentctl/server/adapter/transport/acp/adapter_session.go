@@ -14,6 +14,7 @@ import (
 	"github.com/kandev/kandev/internal/agentctl/types/streams"
 	"github.com/kandev/kandev/internal/common/logger"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.uber.org/zap"
 )
 
@@ -267,7 +268,7 @@ func (a *Adapter) newSession(ctx context.Context, mcpServers []types.McpServer) 
 		if !a.syncNotifQueueThen(clearFailedCreation) {
 			clearFailedCreation()
 		}
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "agent operation failed")
 		if a.maybeEmitAuthRequired(err) {
 			return "", fmt.Errorf("authentication required: %w", err)
 		}
@@ -770,7 +771,7 @@ func (a *Adapter) LoadSession(ctx context.Context, sessionID string, mcpServers 
 			// barrier callback will not run in that case, so clean up directly.
 			clearFailedLoad()
 		}
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "agent operation failed")
 		return &SessionRestoreError{Reason: sessionRestoreReason(err), Cause: err}
 	}
 	a.emitMCPAttachmentStart(ctx)
@@ -911,7 +912,7 @@ func (a *Adapter) ResumeSession(ctx context.Context, sessionID string, mcpServer
 		a.pendingCopilotNative = nil
 		a.pendingCopilotNativeDropped = false
 		a.mu.Unlock()
-		span.RecordError(err)
+		span.SetStatus(codes.Error, "agent operation failed")
 		return fmt.Errorf("failed to resume session: %w", err)
 	}
 	a.emitMCPAttachmentStart(ctx)

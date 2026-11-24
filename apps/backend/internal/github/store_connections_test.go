@@ -700,3 +700,27 @@ func assertRowDeleted(t *testing.T, db *sqlx.DB, table, id string) {
 		t.Fatalf("%s %s still present, want deleted as a task-contribution orphan", table, id)
 	}
 }
+
+func TestStartupHostCredentialsNeedActiveWorkspaceConnection(t *testing.T) {
+	store := newTestStore(t)
+	ctx := t.Context()
+	seedConnectionWorkspaces(t, store, "ws-host")
+	for _, tc := range []struct {
+		source ConnectionSource
+		status ConnectionStatus
+		want   bool
+	}{
+		{ConnectionSourcePAT, ConnectionStatusActive, false},
+		{ConnectionSourceGHCLI, ConnectionStatusRevoked, false},
+		{ConnectionSourceGHCLI, ConnectionStatusActive, true},
+	} {
+		connection := &WorkspaceConnection{WorkspaceID: "ws-host", Source: tc.source, Status: tc.status, GitHubHost: defaultGitHubHost, Login: "fixture"}
+		if err := store.UpsertWorkspaceConnection(ctx, connection); err != nil {
+			t.Fatal(err)
+		}
+		got, err := store.hasActiveHostCredential(ctx)
+		if err != nil || got != tc.want {
+			t.Fatalf("source %s status %s: got %v, %v", tc.source, tc.status, got, err)
+		}
+	}
+}

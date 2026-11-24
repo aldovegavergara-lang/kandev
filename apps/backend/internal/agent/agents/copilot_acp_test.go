@@ -6,10 +6,7 @@ import (
 )
 
 // TestCopilotACP_PermissionSettings_Curated verifies the four curated flag
-// suggestions surfaced to the profile-creation UI. `allow_all_tools` is
-// enabled by default so autonomous runs don't stall on per-tool-call
-// permission prompts; the other --allow-all-* and --no-ask-user toggles
-// stay off as safe defaults.
+// suggestions surfaced to the profile-creation UI. Broader permissions are opt-in.
 func TestCopilotACP_PermissionSettings_Curated(t *testing.T) {
 	ag := NewCopilotACP()
 	settings := ag.PermissionSettings()
@@ -17,7 +14,7 @@ func TestCopilotACP_PermissionSettings_Curated(t *testing.T) {
 	// Pin the expected default for each curated key. Anything not listed
 	// here defaults off.
 	wantDefault := map[string]bool{
-		"allow_all_tools": true,
+		"allow_all_tools": false,
 		"allow_all_paths": false,
 		"allow_all_urls":  false,
 		"no_ask_user":     false,

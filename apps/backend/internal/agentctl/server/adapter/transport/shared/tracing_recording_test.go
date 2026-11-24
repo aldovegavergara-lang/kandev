@@ -54,7 +54,7 @@ func TestTraceProtocolEventNonRecordingSkipsJSON(t *testing.T) {
 	}
 }
 
-func TestTraceProtocolEventRecordingPreservesPayloads(t *testing.T) {
+func TestTraceProtocolEventRecordingOmitsPayloads(t *testing.T) {
 	for name, sampler := range map[string]sdktrace.Sampler{
 		"sampled":     sdktrace.AlwaysSample(),
 		"record only": recordOnlyProtocolSampler{},
@@ -72,10 +72,10 @@ func assertProtocolRecordingPayloads(t *testing.T, sampler sdktrace.Sampler) {
 	useProtocolTestTracer(t, provider.Tracer("protocol-test"))
 	probe := &protocolMarshalProbe{}
 	event := &streams.AgentEvent{Type: "tool_update", SessionID: "session",
-		Text: strings.Repeat("n", maxAttrValueLen+1), Data: map[string]any{"probe": probe}}
-	raw := json.RawMessage(`{"text":"` + strings.Repeat("r", maxAttrValueLen+1) + `"}`)
+		Text: strings.Repeat("n", 8193), Data: map[string]any{"probe": probe}}
+	raw := json.RawMessage(`{"text":"` + strings.Repeat("r", 8193) + `"}`)
 	TraceProtocolEvent(context.Background(), "acp", "agent", event.Type, raw, event)
-	require.Equal(t, 1, probe.calls)
+	require.Zero(t, probe.calls)
 	spans := recorder.Ended()
 	require.Len(t, spans, 1)
 	require.Equal(t, "acp.tool_update", spans[0].Name())
@@ -83,14 +83,7 @@ func assertProtocolRecordingPayloads(t *testing.T, sampler sdktrace.Sampler) {
 	for _, field := range spans[0].Attributes() {
 		attributes[string(field.Key)] = field.Value.AsString()
 	}
-	require.Equal(t, map[string]string{"protocol": "acp", "agent_id": "agent",
-		"event_type": "tool_update", "session_id": "session"}, attributes)
-	events := spans[0].Events()
-	require.Len(t, events, 2)
-	require.Equal(t, "raw", events[0].Name)
-	require.Equal(t, truncate(string(raw), maxAttrValueLen), events[0].Attributes[0].Value.AsString())
-	want, err := json.Marshal(event)
-	require.NoError(t, err)
-	require.Equal(t, "normalized", events[1].Name)
-	require.Equal(t, truncate(string(want), maxAttrValueLen), events[1].Attributes[0].Value.AsString())
+	require.Equal(t, "session", attributes["session_id"])
+	require.NotContains(t, attributes, "data")
+	require.Empty(t, spans[0].Events())
 }

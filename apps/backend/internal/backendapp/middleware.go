@@ -2,6 +2,7 @@ package backendapp
 
 import (
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -9,9 +10,37 @@ import (
 	"github.com/kandev/kandev/internal/common/httpmw"
 )
 
+// Single-user installations trust only requests addressed to the loopback listener.
+// Development retains cross-port loopback access for the separate Vite process.
+func localListenerGuard(devMode bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		req := c.Request
+		authority := &url.URL{Host: req.Host}
+		if !isLoopbackHost(authority.Hostname()) {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+		origin := req.Header.Get("Origin")
+		opaqueRuntime := origin == "null" && strings.HasPrefix(req.URL.Path, "/api/v1/plugins/web-apps/runtime/")
+		if !devMode && origin != "" && !opaqueRuntime {
+			scheme := "http"
+			if req.TLS != nil {
+				scheme = "https"
+			}
+			if !strings.EqualFold(origin, scheme+"://"+req.Host) {
+				c.AbortWithStatus(http.StatusForbidden)
+				return
+			}
+		}
+		c.Next()
+	}
+}
+
 // corsMiddleware returns a CORS middleware for HTTP and WebSocket connections.
 func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		c.Header("Referrer-Policy", "no-referrer")
+		c.Header("X-Content-Type-Options", "nosniff")
 		if origin := c.Request.Header.Get("Origin"); origin != "" {
 			opaqueRuntime := origin == "null" && strings.HasPrefix(c.Request.URL.Path, "/api/v1/plugins/web-apps/runtime/")
 			if !opaqueRuntime && !httpmw.AllowedOrigin(origin, c.Request.Host) {
