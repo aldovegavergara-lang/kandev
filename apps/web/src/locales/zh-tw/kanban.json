@@ -1,4 +1,12 @@
 {
+  "activityRead": "正在讀取檔案",
+  "activityEdit": "正在編輯檔案",
+  "activitySearch": "正在搜尋",
+  "activityExecute": "正在執行命令",
+  "activityReply": "正在撰寫回復",
+  "activityTool": "正在使用工具",
+  "activityToolFinished": "工具已完成",
+  "activityToolFailed": "工具執行失敗",
   "addRepositoryPullRequestSessionParent": "在清單行中新增儲存庫、提取要求、工作階段、父任務與審閱上下文。",
   "addTask": "新增任務",
   "allRepositories": "全部儲存庫",

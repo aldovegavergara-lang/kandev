@@ -96,6 +96,19 @@ export type TaskStatusSummary = {
   updated_at: string;
   /** Semantic task activity, separate from summary projection freshness. */
   last_activity_at?: string;
+  agent_activity?: {
+    session_id: string;
+    kind:
+      | "reply"
+      | "tool"
+      | "tool_read"
+      | "tool_edit"
+      | "tool_search"
+      | "tool_execute"
+      | "tool_done"
+      | "tool_failed";
+    at: string;
+  };
   primary_session?: {
     id: string;
     state: TaskSessionState;

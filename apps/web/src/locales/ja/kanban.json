@@ -1,4 +1,12 @@
 {
+  "activityRead": "ファイルを読み取り中",
+  "activityEdit": "ファイルを編集中",
+  "activitySearch": "検索中",
+  "activityExecute": "コマンドを実行中",
+  "activityReply": "返信を作成中",
+  "activityTool": "ツールを実行中",
+  "activityToolFinished": "ツールの実行完了",
+  "activityToolFailed": "ツールの実行失敗",
   "addRepositoryPullRequestSessionParent": "リスト行にリポジトリ、プルリクエスト、セッション、親、レビュー文脈を追加。",
   "addTask": "タスク追加",
   "allRepositories": "全リポジトリ",

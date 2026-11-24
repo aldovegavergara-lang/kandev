@@ -240,6 +240,7 @@ type projectionState struct {
 }
 
 type sessionObservation struct {
+	agentActivity       *AgentActivitySummary
 	id                  string
 	state               string
 	isPrimary           bool

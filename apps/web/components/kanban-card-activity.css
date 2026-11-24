@@ -1,0 +1,51 @@
+.kanban-meter {
+  display: inline-flex;
+  align-items: end;
+  flex: none;
+  gap: 2px;
+  height: 14px;
+  color: light-dark(#8654a6, #dcaaf3);
+}
+
+.kanban-meter i {
+  width: 3px;
+  height: 100%;
+  background: repeating-linear-gradient(to top, currentColor 0 2px, transparent 2px 3px);
+  transform: scaleY(var(--rest, 0.45));
+  transform-origin: bottom;
+}
+
+.kanban-meter i:nth-child(2n) {
+  --rest: 0.7;
+  --delay: 65ms;
+}
+.kanban-meter i:nth-child(3n) {
+  --rest: 0.35;
+  --delay: 135ms;
+}
+.kanban-meter i:nth-child(4) {
+  --rest: 0.85;
+  --delay: 35ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .kanban-meter[data-pulse="true"] i {
+    animation: kanban-meter-beat 620ms ease-in-out var(--delay, 0ms) 1;
+  }
+}
+
+@keyframes kanban-meter-beat {
+  0%,
+  100% {
+    transform: scaleY(var(--rest, 0.45));
+  }
+  28% {
+    transform: scaleY(1);
+  }
+  58% {
+    transform: scaleY(0.3);
+  }
+  78% {
+    transform: scaleY(0.8);
+  }
+}

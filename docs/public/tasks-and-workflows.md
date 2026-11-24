@@ -1053,6 +1053,14 @@ it; double-click opens it directly.
 
 ## Find and organize tasks
 
+A running agent has a small activity meter on its Kanban card. A short pulse
+marks a reply or a tool event. The label and timestamp identify the most
+recent observation, including file reads, edits, searches and commands.
+When several sessions are running, the card shows the most recent one that
+is still working. A request for permission or a reply takes priority. When
+a session finishes, the bars stop. Reduced-motion mode keeps the same labels
+and stationary bars.
+
 To include tasks without a repository, open the sidebar filters and select
 **None** in a **Repository** filter. With the **in** operator, select **None**
 together with named repositories to include both. Save the view to retain the

@@ -1,4 +1,12 @@
 {
+  "activityRead": "正在读取文件",
+  "activityEdit": "正在编辑文件",
+  "activitySearch": "正在搜索",
+  "activityExecute": "正在运行命令",
+  "activityReply": "正在撰写回复",
+  "activityTool": "正在使用工具",
+  "activityToolFinished": "工具已完成",
+  "activityToolFailed": "工具执行失败",
   "addRepositoryPullRequestSessionParent": "在列表行中添加仓库、拉取请求、会话、父任务与审阅上下文。",
   "addTask": "添加任务",
   "allRepositories": "全部仓库",

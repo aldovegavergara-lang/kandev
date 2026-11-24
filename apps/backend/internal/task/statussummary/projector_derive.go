@@ -13,6 +13,7 @@ func deriveSummary(state *projectionState) TaskStatusSummary {
 	primary, foregroundActivity, activeSubagentCount := deriveSessionFields(state)
 	return TaskStatusSummary{
 		PrimarySession:      primary,
+		AgentActivity:       latestAgentActivity(state),
 		HasRunningSession:   deriveHasRunningSession(state),
 		ForegroundActivity:  foregroundActivity,
 		ActiveSubagentCount: activeSubagentCount,

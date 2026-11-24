@@ -1,4 +1,12 @@
 {
+  "activityRead": "Reading a file",
+  "activityEdit": "Editing a file",
+  "activitySearch": "Searching",
+  "activityExecute": "Running a command",
+  "activityReply": "Writing a reply",
+  "activityTool": "Using a tool",
+  "activityToolFinished": "Tool finished",
+  "activityToolFailed": "Tool failed",
   "addRepositoryPullRequestSessionParent": "Add repository, pull request, session, parent, and review context to List rows.",
   "addTask": "Add task",
   "allRepositories": "All repositories",

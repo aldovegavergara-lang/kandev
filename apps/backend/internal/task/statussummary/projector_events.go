@@ -356,6 +356,11 @@ func applySummaryBaseline(state *projectionState, summary *TaskStatusSummary) {
 			isPrimary: true,
 		}
 	}
+	if pulse := summary.AgentActivity; pulse != nil {
+		obs := state.sessions[pulse.SessionID]
+		obs.agentActivity = pulse
+		state.sessions[pulse.SessionID] = obs
+	}
 	if summary.TaskError != nil {
 		copy := *summary.TaskError
 		copy.RecoveryActions = normalizeRecoveryActionsForCategory(copy.Category, copy.RecoveryActions)
@@ -568,6 +573,11 @@ func (p *Projector) restoreSessionObservations(
 			activeSubagentCount: maxInt(input.ActiveSubagentCount, 0),
 			unread:              unreadRanksFromState(input.Unread),
 		}
+		if input.State == sessionStateRunning {
+			observation := sessions[sessionID]
+			observation.agentActivity = state.sessions[sessionID].agentActivity
+			sessions[sessionID] = observation
+		}
 		activeError := normalizeRebuildError(input.ActiveError, p.now().UTC())
 		if activeError == nil || state.clearedErrorStamps[sessionID] == activeError.Stamp {
 			continue
@@ -732,6 +742,9 @@ func (p *Projector) applySessionEventLocked(state *projectionState, data map[str
 	observation.id = sessionID
 	if value := firstString(data, "new_state", "state", "primary_session_state"); value != "" {
 		observation.state = value
+		if value != sessionStateRunning {
+			observation.agentActivity = nil
+		}
 	}
 	if value, ok := data["is_primary"].(bool); ok {
 		observation.isPrimary = value
@@ -838,8 +851,9 @@ func (p *Projector) applyMessageEventLocked(state *projectionState, eventType st
 		return false
 	}
 	changed := p.clearSupersededErrorFromMessageLocked(state, eventType, sessionID, data)
+	pulseChanged := observeAgentActivity(state, eventType, data)
 	pendingChanged := p.applyPendingMessageLocked(state, eventType, data, sessionID)
-	return changed || pendingChanged
+	return changed || pendingChanged || pulseChanged
 }
 
 func (p *Projector) clearSupersededErrorFromMessageLocked(

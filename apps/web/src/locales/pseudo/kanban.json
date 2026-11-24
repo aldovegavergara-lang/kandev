@@ -1,4 +1,12 @@
 {
+  "activityRead": "Ŕēàďĩńĝ à ƒĩĺē",
+  "activityEdit": "Ēďĩţĩńĝ à ƒĩĺē",
+  "activitySearch": "Śēàŕćĥĩńĝ",
+  "activityExecute": "Ŕũńńĩńĝ à ćōḿḿàńď",
+  "activityReply": "Ŵŕĩţĩńĝ à ŕēƥĺŷ",
+  "activityTool": "Ũśĩńĝ à ţōōĺ",
+  "activityToolFinished": "Ţōōĺ ƒĩńĩśĥēď",
+  "activityToolFailed": "Ţōōĺ ƒàĩĺēď",
   "addRepositoryPullRequestSessionParent": "Àďď ŕēƥōśĩţōŕŷ, ƥũĺĺ ŕēqũēśţ, śēśśĩōń, ƥàŕēńţ, àńď ŕēvĩēŵ ćōńţēxţ ţō Ĺĩśţ ŕōŵś.",
   "addTask": "Àďď ţàśķ",
   "allRepositories": "Àĺĺ ŕēƥōśĩţōŕĩēś",

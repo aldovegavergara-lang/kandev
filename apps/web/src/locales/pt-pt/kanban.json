@@ -1,4 +1,12 @@
 {
+  "activityRead": "A ler um ficheiro",
+  "activityEdit": "A editar um ficheiro",
+  "activitySearch": "A pesquisar",
+  "activityExecute": "A executar um comando",
+  "activityReply": "A escrever uma resposta",
+  "activityTool": "A utilizar uma ferramenta",
+  "activityToolFinished": "Ferramenta concluída",
+  "activityToolFailed": "Falha na ferramenta",
   "addRepositoryPullRequestSessionParent": "Adicionar o contexto de repositório, pull request, sessão, tarefa-mãe e revisão às linhas da Lista.",
   "addTask": "Adicionar tarefa",
   "allRepositories": "Todos os repositórios",

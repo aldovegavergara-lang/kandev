@@ -9,6 +9,7 @@ import { Checkbox } from "@kandev/ui/checkbox";
 import { PRTaskIcon } from "@/components/github/pr-task-icon";
 import { MRTaskIcon } from "@/components/gitlab/mr-task-icon";
 import { RegisteredChangeRequestTaskIcon } from "@/components/integrations/registered-change-request-task-icon";
+import { KanbanCardActivity } from "./kanban-card-activity";
 import { KanbanCardActions } from "@/components/kanban-card-actions";
 import { type KanbanCardMenuEntry } from "@/components/kanban-card-menu-items";
 import { TaskCardIndicators, TaskCardTags } from "@/components/kanban-card-plugin-slots";
@@ -104,6 +105,7 @@ export function KanbanCardBody({
           {task.description}
         </p>
       )}
+      <KanbanCardActivity task={task} />
       <KanbanCardRelationship task={task} />
       <KanbanCardBadges task={task} />
       <TaskCardTags task={task} />

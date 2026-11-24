@@ -53,6 +53,7 @@ const QuotaWaitReasonQuotaLimited = "quota_limited"
 type TaskStatusSummary struct {
 	Revision       uint64                 `json:"revision"`
 	UpdatedAt      time.Time              `json:"updated_at"`
+	AgentActivity  *AgentActivitySummary  `json:"agent_activity,omitempty"`
 	LastActivityAt *time.Time             `json:"last_activity_at,omitempty"`
 	PrimarySession *PrimarySessionSummary `json:"primary_session,omitempty"`
 	// HasRunningSession is authoritative when present. A nil value identifies
@@ -222,6 +223,9 @@ func (s TaskStatusSummary) SemanticEqual(other TaskStatusSummary) bool {
 // Validate enforces the bounded fields at the persistence boundary. Other
 // source-specific limits belong to the projector that derives this model.
 func (s TaskStatusSummary) Validate() error {
+	if s.AgentActivity != nil && !s.AgentActivity.valid() {
+		return fmt.Errorf("invalid agent activity")
+	}
 	if s.ActiveSubagentCount < 0 {
 		return fmt.Errorf("active subagent count cannot be negative")
 	}
@@ -492,6 +496,7 @@ func (s TaskStatusSummary) SemanticJSON() ([]byte, error) {
 		return nil, err
 	}
 	return json.Marshal(semanticPayload{
+		AgentActivity:       s.AgentActivity,
 		LastActivityAt:      s.LastActivityAt,
 		PrimarySession:      s.PrimarySession,
 		HasRunningSession:   s.HasRunningSession,
@@ -512,6 +517,7 @@ func (s TaskStatusSummary) SemanticJSON() ([]byte, error) {
 }
 
 type semanticPayload struct {
+	AgentActivity       *AgentActivitySummary  `json:"agent_activity,omitempty"`
 	LastActivityAt      *time.Time             `json:"last_activity_at,omitempty"`
 	PrimarySession      *PrimarySessionSummary `json:"primary_session,omitempty"`
 	HasRunningSession   *bool                  `json:"has_running_session,omitempty"`
