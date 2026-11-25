@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   activateLocale,
+  preloadLocale,
   DEFAULT_LOCALE,
   i18n,
   isSupportedLocale,
@@ -187,6 +188,12 @@ describe("activateLocale", () => {
       "CLI mode; your prompt will be auto-injected into the terminal",
     );
     expect(i18n.getResource("en", "task", "cliModeYourPromptWillBe")).toBeUndefined();
+  });
+
+  it("marks the document with the boot locale after loading its catalog", async () => {
+    document.documentElement.lang = "en";
+    await preloadLocale("es");
+    expect(document.documentElement.lang).toBe("es");
   });
 
   it.each([

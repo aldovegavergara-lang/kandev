@@ -371,6 +371,7 @@ export async function preloadLocale(locale: SupportedLocale): Promise<void> {
   if (i18next.language !== locale) {
     await i18next.changeLanguage(locale);
   }
+  if (typeof document !== "undefined") document.documentElement.lang = locale;
 }
 
 /**
