@@ -52,8 +52,9 @@ export function SwimlaneHeader({
             tabIndex={0}
             onClick={onToggleMultiSelect}
             onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onToggleMultiSelect()}
+            aria-pressed={!!isMultiSelectMode}
             data-testid="multi-select-toggle"
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
+            className="subtle-action flex items-center gap-1.5 rounded-md px-1 text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0 cursor-pointer"
           >
             <Checkbox
               checked={!!isMultiSelectMode}
@@ -64,9 +65,13 @@ export function SwimlaneHeader({
             {t("kanban:multiSelect")}
           </div>
         )}
-        <div className="flex-1 border-t border-dashed border-border/50" />
       </div>
-      <button type="button" onClick={onToggleCollapse} className="cursor-pointer group">
+      <button
+        type="button"
+        onClick={onToggleCollapse}
+        aria-expanded={!isCollapsed}
+        className="cursor-pointer group rounded-full focus-visible:outline-2 focus-visible:outline-ring"
+      >
         <Badge variant="secondary" className="text-xs shrink-0 gap-1.5 px-2.5 py-0.5">
           <IconChevronRight
             className={cn(
@@ -78,10 +83,7 @@ export function SwimlaneHeader({
           <span className="text-muted-foreground/60">{taskCount}</span>
         </Badge>
       </button>
-      <div className="flex items-center gap-1">
-        <div className="flex-1 border-t border-dashed border-border/50" />
-        {columnsMenu}
-      </div>
+      <div className="flex items-center justify-end">{columnsMenu}</div>
     </div>
   );
 }

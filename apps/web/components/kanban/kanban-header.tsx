@@ -139,7 +139,7 @@ function ViewToggleGroup({
       type="single"
       value={toggleValue}
       onValueChange={onValueChange}
-      variant="outline"
+      spacing={1}
       size={size}
       className={className}
     >
@@ -148,7 +148,8 @@ function ViewToggleGroup({
           key={value}
           value={value}
           data-testid={`view-toggle-${value}`}
-          className={`cursor-pointer data-[state=on]:bg-muted data-[state=on]:text-foreground ${itemClassName ?? ""}`}
+          aria-label={t(labelKey)}
+          className={`subtle-action cursor-pointer data-[state=on]:bg-muted data-[state=on]:text-foreground ${itemClassName ?? ""}`}
         >
           <Tooltip>
             <TooltipTrigger asChild>
@@ -291,10 +292,10 @@ function TabletHeader({
             size="icon-lg"
           />
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon-lg"
             onClick={() => setMenuOpen(true)}
-            className="cursor-pointer"
+            className="subtle-action cursor-pointer"
           >
             <IconMenu2 className="h-4 w-4" />
             <span className="sr-only">{t("kanban:openMenu")}</span>

@@ -23,7 +23,6 @@
   flex: none;
   margin: 8px 14px 16px;
   padding: clamp(18px, 2.2vw, 32px);
-  border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--console-surface);
 }
@@ -147,30 +146,27 @@
   }
 }
 .sound-console-layout [data-console-column] {
-  border-inline-end-color: transparent;
   padding-inline: 10px;
-}
-.sound-console-layout [data-console-column] > :first-child {
-  border-top: 1px solid var(--input);
-  padding-top: 13px;
-  margin-bottom: 6px;
 }
 .sound-console-layout
   [data-console-column]:has([data-activity="running"], [data-activity="background"])
-  > :first-child {
-  border-color: var(--primary);
+  [data-console-column-header]
+  h2 {
+  color: var(--primary);
 }
 .sound-console-layout [data-console-card] {
   background: var(--card);
   color: var(--card-foreground);
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
   border-radius: 16px;
   padding-block: 0;
   box-shadow: none;
 }
-.sound-console-layout [data-console-card]:hover {
-  background: var(--muted);
-  border-color: var(--ring);
+@media (hover: hover) {
+  .sound-console-layout [data-console-card]:hover {
+    background: var(--muted);
+    border-color: var(--border);
+  }
 }
 .sound-console-layout [data-console-card]:is(:focus-visible, [data-console-selected="true"]),
 .sound-console-layout
@@ -191,9 +187,7 @@
 }
 .sound-console-layout .console-card-footer:not(:empty) {
   display: block;
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border);
+  margin-top: 8px;
 }
 .sound-console-layout [data-testid="task-card-title"] {
   font-size: 18px;
@@ -260,6 +254,9 @@
   gap: 6px;
   overflow-x: auto;
   padding: 2px;
+  --subtle-action-hover: #373b45;
+  --subtle-action-border: #727987;
+  --subtle-action-focus: #a5b6ff;
 }
 .console-channel-list button {
   flex: 1 0 6.2rem;
@@ -267,16 +264,9 @@
   text-align: start;
   padding: 6px 8px;
   border-radius: 8px;
-  background: #373b45;
   color: #ffffff;
   cursor: pointer;
   font-size: 12px;
-}
-.console-channel-list button:hover {
-  background: #464b58;
-}
-.console-channel-list button:focus-visible {
-  outline: 2px solid #a5b6ff;
 }
 .console-channel-list strong {
   float: right;

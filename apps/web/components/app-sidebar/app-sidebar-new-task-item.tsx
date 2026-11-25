@@ -347,7 +347,7 @@ function NewTaskUtilityActions({
       role="group"
       aria-label={t("common:utilities")}
       data-testid="sidebar-labelled-utilities"
-      className="flex items-center rounded-md border border-border/70"
+      className="flex items-center gap-1"
     >
       <LabelledUtility
         icon={
@@ -360,7 +360,6 @@ function NewTaskUtilityActions({
         onClick={handleOpenQuickChat}
         testId="sidebar-quick-chat-shortcut"
       />
-      <span aria-hidden="true" className="h-4 border-l" />
       <LabelledUtility
         icon={<IconTerminal2 className="size-4" />}
         label={t("sidebar:quickTerminal")}

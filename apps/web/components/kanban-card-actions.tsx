@@ -84,7 +84,7 @@ function KanbanCardMenu(props: KanbanCardMenuProps) {
         <button
           ref={menuTriggerRef}
           type="button"
-          className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex h-11 min-h-11 w-11 min-w-11 items-center justify-center rounded-sm p-0 transition-colors cursor-pointer sm:h-auto sm:min-h-0 sm:w-auto sm:min-w-0 sm:p-1 sm:-m-1"
+          className="subtle-action text-muted-foreground hover:text-foreground hover:bg-muted inline-flex h-11 min-h-11 w-11 min-w-11 items-center justify-center rounded-sm p-0 transition-colors cursor-pointer sm:h-auto sm:min-h-0 sm:w-auto sm:min-w-0 sm:p-1 sm:-m-1"
           onClick={(e) => {
             e.stopPropagation();
             if (touchTrigger.current) {

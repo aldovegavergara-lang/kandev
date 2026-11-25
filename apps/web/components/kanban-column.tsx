@@ -75,7 +75,11 @@ function ColumnHeader({
   const queuedCount = partitionWipTasks(tasks, step.id).queued.length;
 
   return (
-    <div ref={headerRef} className="flex shrink-0 items-center justify-between pb-2 mb-3 px-1">
+    <div
+      ref={headerRef}
+      data-console-column-header
+      className="flex shrink-0 items-center justify-between pb-2 mb-3 px-1"
+    >
       <div className="flex items-center gap-2">
         <div className={cn("w-2 h-2 rounded-full", step.color)} />
         <h2 className="font-semibold text-sm">{step.title}</h2>
@@ -229,7 +233,6 @@ export const KanbanColumn = memo(function KanbanColumn({
       aria-label={step.title}
       className={cn(
         "flex flex-col flex-1 h-full min-w-0 px-3 py-2 sm:min-h-[200px]",
-        "border-r border-dashed border-border/50 last:border-r-0",
         isOver && "bg-primary/5",
       )}
     >

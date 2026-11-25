@@ -68,7 +68,7 @@ export function LabelledUtility({
       onClick={onClick}
       data-testid={testId}
       aria-label={label}
-      className="flex h-7 min-w-0 flex-1 items-center justify-center gap-2 rounded text-[12px] text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"
+      className="subtle-action flex h-7 min-w-0 flex-1 items-center justify-center gap-2 rounded text-[12px] text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"
     >
       {icon}
       <span className="truncate">{label}</span>

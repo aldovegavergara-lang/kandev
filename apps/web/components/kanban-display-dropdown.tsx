@@ -476,6 +476,7 @@ export function KanbanDisplayDropdown({
   pluginFilterSelections,
   onPluginFilterChange,
 }: KanbanDisplayDropdownProps) {
+  const { t } = useTranslation();
   const displaySettings = useKanbanDisplaySettings();
   const { allRepositoriesSelected, selectedRepositoryId } = displaySettings;
   const repositoryValue = allRepositoriesSelected ? "all" : (selectedRepositoryId ?? "all");
@@ -492,10 +493,11 @@ export function KanbanDisplayDropdown({
       <PopoverTrigger asChild>
         <Button
           ref={triggerRef}
-          variant="outline"
+          variant="ghost"
           size={triggerSize}
           data-testid="display-button"
-          className="cursor-pointer"
+          aria-label={t("kanban:displayOptions")}
+          className="subtle-action cursor-pointer"
         >
           <IconAdjustmentsHorizontal className="h-4 w-4" />
         </Button>

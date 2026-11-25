@@ -617,8 +617,8 @@ function MobileSelectionToggle({ active, onToggle }: { active: boolean; onToggle
   return (
     <div className="px-2 py-1">
       <Button
-        variant="outline"
-        className="cursor-pointer"
+        variant="ghost"
+        className="subtle-action cursor-pointer bg-muted/50"
         aria-pressed={active}
         onClick={onToggle}
         data-testid="mobile-select-tasks"

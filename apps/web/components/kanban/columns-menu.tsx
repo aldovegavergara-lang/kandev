@@ -64,7 +64,7 @@ export function ColumnsMenu({
           variant="ghost"
           size="icon"
           className={cn(
-            "cursor-pointer text-muted-foreground hover:text-foreground",
+            "subtle-action cursor-pointer text-muted-foreground hover:text-foreground",
             touchTargets ? "h-11 w-11" : "h-6 w-6",
           )}
           data-testid={`columns-menu-${workflowId}`}

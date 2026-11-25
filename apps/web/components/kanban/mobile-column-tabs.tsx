@@ -225,9 +225,9 @@ function PreviousStepButton({
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="ghost"
       size="icon"
-      className="h-11 w-11 cursor-pointer rounded-xl transition-[background-color,color,border-color,transform] duration-150 ease-out active:scale-[0.96]"
+      className="subtle-action h-11 w-11 cursor-pointer rounded-xl transition-[background-color,color,border-color,transform] duration-150 ease-out active:scale-[0.96]"
       disabled={!activeStep || activeIndex === 0}
       onClick={() => onColumnChange(activeIndex - 1)}
       aria-label={t("kanban:previousStep")}
@@ -253,9 +253,9 @@ function NextStepButton({
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="ghost"
       size="icon"
-      className="h-11 w-11 cursor-pointer rounded-xl transition-[background-color,color,border-color,transform] duration-150 ease-out active:scale-[0.96]"
+      className="subtle-action h-11 w-11 cursor-pointer rounded-xl transition-[background-color,color,border-color,transform] duration-150 ease-out active:scale-[0.96]"
       disabled={!activeStep || activeIndex === stepCount - 1}
       onClick={() => onColumnChange(activeIndex + 1)}
       aria-label={t("kanban:nextStep")}
@@ -285,8 +285,8 @@ function NavigatorTrigger({
     <DrawerTrigger asChild>
       <Button
         type="button"
-        variant="outline"
-        className="h-14 min-w-0 cursor-pointer justify-between rounded-xl bg-muted/30 px-3 shadow-sm transition-[background-color,color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96]"
+        variant="ghost"
+        className="subtle-action h-14 min-w-0 cursor-pointer justify-between rounded-xl bg-muted/40 px-3 transition-[background-color,color,border-color,box-shadow,transform] duration-150 ease-out active:scale-[0.96]"
         data-testid="mobile-board-navigator"
         aria-label={ariaLabel}
       >
@@ -335,7 +335,7 @@ function MobileColumnTabsHeader({
   t: (key: string, options?: Record<string, string>) => string;
 }) {
   return (
-    <div className="grid shrink-0 grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-2 border-b border-border/70 px-4 py-2">
+    <div className="grid shrink-0 grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-2 px-4 py-2">
       <PreviousStepButton
         activeStep={activeStep}
         activeIndex={activeIndex}

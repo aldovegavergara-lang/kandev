@@ -105,6 +105,7 @@ function ChannelLoad({
           <button
             key={c.id}
             type="button"
+            className="subtle-action"
             onClick={() => onSelect(i)}
             style={{ "--load": (100 * c.count) / max + "%" } as CSSProperties}
             title={t("consoleTrackCount", { count: c.count })}
