@@ -32,6 +32,14 @@ const buttonVariants = cva(
         "icon-lg": "size-8 [&_svg:not([class*='size-'])]:size-4",
       },
     },
+    compoundVariants: [
+      {
+        variant: "default",
+        size: ["xs", "sm", "default", "lg"],
+        className:
+          "rounded-full bg-[var(--cobalt,var(--primary))] text-[color:var(--cobalt-foreground,var(--primary-foreground))] font-semibold hover:bg-[color-mix(in_srgb,var(--cobalt,var(--primary))_86%,black)]",
+      },
+    ],
     defaultVariants: {
       variant: "default",
       size: "default",

@@ -13,18 +13,18 @@
 // Core palette — dark
 // ---------------------------------------------------------------------------
 export const DARK = {
-  bg: "#211b2c",
-  fg: "#f6efff",
-  card: "#30273c",
-  border: "#52425e",
-  hover: "#45334f",
-  popover: "#32283e",
-  lineHighlight: "#30273c",
-  lineNumber: "#8e7b9b",
-  lineNumberActive: "#c1b2ce",
-  selection: "#644273",
-  selectionInactive: "#44384f",
-  cursor: "#f6efff",
+  bg: "#1d1f24",
+  fg: "#f6f6f1",
+  card: "#2a2d36",
+  border: "#454953",
+  hover: "#404550",
+  popover: "#30343d",
+  lineHighlight: "#2a2d36",
+  lineNumber: "#969ba5",
+  lineNumberActive: "#c0c3ca",
+  selection: "#354d90",
+  selectionInactive: "#394251",
+  cursor: "#f6f6f1",
   scrollbarShadow: "#00000000",
   scrollbarThumb: "#64646480",
   scrollbarThumbHover: "#82828299",
@@ -35,11 +35,11 @@ export const DARK = {
 // Core palette — light
 // ---------------------------------------------------------------------------
 export const LIGHT = {
-  bg: "#faf7fc",
-  fg: "#281d30",
+  bg: "#edede5",
+  fg: "#1d1f24",
   card: "#ffffff",
-  lineHighlight: "#f0eaf4",
-  lineNumber: "#85748e",
+  lineHighlight: "#dfdfd8",
+  lineNumber: "#60656e",
   lineNumberActive: "#555555",
 } as const;
 

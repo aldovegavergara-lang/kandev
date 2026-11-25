@@ -21,6 +21,7 @@ for (const es of [false, true]) {
       name: es ? "Consola de sonido" : "Sound console",
     });
     await expect(consolePanel).toContainText(es ? "En reposo" : "Standby");
+    await expect(consolePanel.getByRole("heading")).toHaveCount(0);
     const channels = consolePanel.getByRole("group", {
       name: es ? "Carga por columna" : "Channel load",
     });
@@ -64,6 +65,7 @@ for (const es of [false, true]) {
     await expect(activity).toContainText(es ? "Herramienta finalizada" : "Tool finished");
     await expect(activity.locator(".kanban-meter")).toHaveCount(0, { timeout: 30_000 });
     await expect(consolePanel).toContainText(es ? "En reposo" : "Standby");
+    await expect(consolePanel.getByRole("heading")).toHaveCount(0);
     await expect(consolePanel).toHaveAttribute("data-console-live", "false");
   });
 }

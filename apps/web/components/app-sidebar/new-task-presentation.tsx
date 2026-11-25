@@ -29,7 +29,6 @@ export function NewTaskPresentation({
           compact
         ) : (
           <Button
-            variant="secondary"
             disabled={disabled}
             onClick={onClick}
             data-testid="create-task-button"

@@ -4,7 +4,7 @@
   flex: none;
   gap: 2px;
   height: 14px;
-  color: light-dark(#8654a6, #dcaaf3);
+  color: var(--primary);
 }
 
 .kanban-meter i {

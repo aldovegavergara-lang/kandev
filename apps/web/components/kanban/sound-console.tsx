@@ -149,17 +149,15 @@ export function SoundConsole({
           <i />
           {lead ? t("consoleLive") : t("consoleStandby")}
         </div>
-        <h2>
-          {lead ? (
+        {lead && (
+          <h2>
             <button type="button" onClick={() => onOpenTask(lead)}>
               {lead.title}
               <IconArrowUpRight size={15} />
             </button>
-          ) : (
-            t("soundConsole")
-          )}
-        </h2>
-        <ConsoleCaption lead={lead} total={total} workflowName={workflowName} />
+          </h2>
+        )}
+        <ConsoleCaption lead={lead} total={total} workflowName={lead ? workflowName : undefined} />
       </div>
       {lead && (
         <div className="console-display">
