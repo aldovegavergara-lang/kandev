@@ -488,7 +488,7 @@ export function SwimlaneKanbanContent({
   });
 
   return (
-    <div className="sound-console-layout">
+    <div className="sound-console-layout" data-compact={Boolean(sizing.columnHeight)}>
       <SoundConsole
         steps={displaySteps}
         tasks={displayTasks}

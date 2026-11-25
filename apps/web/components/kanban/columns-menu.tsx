@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@kandev/ui/button";
+import { Checkbox } from "@kandev/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -104,5 +105,53 @@ export function ColumnsMenu({
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export function EmbeddedColumnsSettings(props: ColumnsMenuProps) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const orderedSteps = useMemo(() => sortWorkflowStepsByPosition(props.steps), [props.steps]);
+  const hidden = useMemo(() => new Set(props.hiddenStepIds), [props.hiddenStepIds]);
+  return (
+    <div className="min-w-0">
+      <Button
+        variant="ghost"
+        type="button"
+        size="sm"
+        aria-expanded={open}
+        aria-controls={`board-column-settings-${props.workflowId}`}
+        data-state={open ? "open" : "closed"}
+        data-testid={`columns-menu-${props.workflowId}`}
+        onClick={() => setOpen((previous) => !previous)}
+      >
+        <IconColumns3 className="size-3.5" />
+        {t("kanban:columns")}
+      </Button>
+      <div
+        id={`board-column-settings-${props.workflowId}`}
+        hidden={!open}
+        className="space-y-1 px-2 py-1"
+      >
+        <label className="flex cursor-pointer items-center gap-2 py-1 text-xs">
+          <Checkbox
+            checked={props.autoHideEmpty}
+            onCheckedChange={() => props.onToggleAutoHide(props.workflowId)}
+            data-testid={`columns-menu-auto-hide-empty-${props.workflowId}`}
+          />
+          {t("kanban:autoHideEmptyColumns")}
+        </label>
+        {orderedSteps.map((step) => (
+          <label key={step.id} className="flex cursor-pointer items-center gap-2 py-1 text-xs">
+            <Checkbox
+              checked={!hidden.has(step.id)}
+              onCheckedChange={() => props.onToggle(props.workflowId, step.id)}
+              data-testid={`columns-menu-step-${step.id}`}
+            />
+            {step.title}
+          </label>
+        ))}
+      </div>
+    </div>
   );
 }

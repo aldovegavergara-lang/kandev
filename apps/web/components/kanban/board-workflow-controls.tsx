@@ -59,8 +59,8 @@ export function BoardWorkflowControls({
               <Button type="button" variant="ghost" onClick={onCollapse}>
                 {t("sidebar:collapseGroup", { label: name })}
               </Button>
-              {columns}
             </div>
+            {columns}
             <BoardSelectionButton onDone={close} />
           </div>
         )}

@@ -21,6 +21,7 @@ async function closeDisplayDropdown(kanban: KanbanPage) {
     await trigger.click({ force: true });
   }
   await expect(trigger).not.toHaveAttribute("data-state", "open");
+  await expect(kanban.page.getByTestId("display-settings-content")).toHaveCount(0);
 }
 
 // The workflow counter opens the settings for its own lane.
@@ -33,26 +34,22 @@ function workflowControls(kanban: KanbanPage, workflowId: string) {
 
 async function openColumnsMenu(kanban: KanbanPage, workflowId: string) {
   const trigger = kanban.page.getByTestId(`columns-menu-${workflowId}`);
-  await expect(async () => {
-    if (!(await trigger.isVisible())) {
-      await workflowControls(kanban, workflowId).click();
-    }
-    if ((await trigger.getAttribute("data-state")) !== "open") {
-      await trigger.click();
-    }
-    await expect(trigger).toHaveAttribute("data-state", "open", { timeout: 1_000 });
-  }).toPass({ timeout: 15_000 });
+  if (!(await trigger.isVisible())) {
+    const workflowButton = workflowControls(kanban, workflowId);
+    await workflowButton.click();
+    await expect(workflowButton).toHaveAttribute("aria-expanded", "true");
+  }
+  await expect(trigger).toBeVisible();
+  if ((await trigger.getAttribute("data-state")) !== "open") {
+    await trigger.click();
+  }
+  await expect(trigger).toHaveAttribute("data-state", "open");
 }
 
 async function closeColumnsMenu(kanban: KanbanPage, workflowId: string) {
   const trigger = kanban.page.getByTestId(`columns-menu-${workflowId}`);
-  if ((await trigger.getAttribute("data-state")) === "open") {
-    await kanban.page.keyboard.press("Escape");
-  }
-  await expect(trigger).not.toHaveAttribute("data-state", "open");
-  if (await kanban.page.getByTestId("display-settings-content").isVisible()) {
-    await kanban.page.keyboard.press("Escape");
-  }
+  if (await trigger.isVisible()) await kanban.page.keyboard.press("Escape");
+  await expect(kanban.page.getByTestId("display-settings-content")).not.toBeVisible();
 }
 
 // The menu deliberately stays open across item clicks, so several columns can

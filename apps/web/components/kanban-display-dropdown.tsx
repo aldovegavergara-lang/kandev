@@ -516,7 +516,7 @@ export function KanbanDisplayDropdown({
           const target = e.target as HTMLElement;
           if (
             triggerRef.current?.contains(target) ||
-            target.closest('[data-slot="select-content"], [data-slot="dropdown-menu-content"]')
+            target.closest('[data-slot="select-content"]')
           ) {
             e.preventDefault();
           }

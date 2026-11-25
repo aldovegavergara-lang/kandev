@@ -34,7 +34,7 @@ import {
 import { selectVisibleWorkflows } from "@/lib/kanban/workflow-swimlanes";
 import { reorderWorkflows } from "@/lib/api";
 import { SwimlaneSection } from "./swimlane-section";
-import { ColumnsMenu } from "./columns-menu";
+import { ColumnsMenu, EmbeddedColumnsSettings } from "./columns-menu";
 import { BoardWorkflowControls } from "./board-workflow-controls";
 import { deriveAutoHiddenStepIds } from "@/lib/kanban/auto-hide-empty-columns";
 import { sortWorkflowStepsByPosition } from "@/lib/kanban/workflow-step-order";
@@ -237,8 +237,11 @@ const WorkflowItemContent = memo(function WorkflowItemContent({
     () => moveTargetSteps.filter((step) => !autoHiddenSet.has(step.id)),
     [moveTargetSteps, autoHiddenSet],
   );
+  const embedHeader =
+    !hideHeader && !isCollapsed && snapshot && ViewComponent === getDefaultView().component;
+  const ColumnsControl = embedHeader ? EmbeddedColumnsSettings : ColumnsMenu;
   const columnsMenu = (
-    <ColumnsMenu
+    <ColumnsControl
       workflowId={wf.id}
       workflowName={wf.name}
       steps={snapshotSteps}
@@ -248,8 +251,6 @@ const WorkflowItemContent = memo(function WorkflowItemContent({
       onToggleAutoHide={onToggleAutoHideEmpty}
     />
   );
-  const embedHeader =
-    !hideHeader && !isCollapsed && snapshot && ViewComponent === getDefaultView().component;
   const workflowHeader = embedHeader ? (
     <BoardWorkflowControls
       name={wf.name}

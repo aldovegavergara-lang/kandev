@@ -90,13 +90,14 @@ test("compact lanes survive collapse, workflow filters and preview resizing", as
     const firstColumn = kanban.columnByStepId(seedData.startStepId);
     const secondColumn = kanban.columnByStepId(second.stepId);
     await expectCompactColumn(firstColumn);
-    const toggle = testPage
-      .getByTestId("swimlane-header")
-      .getByRole("button", { name: "Compact second 1", exact: true });
-    await toggle.click();
+    const secondHeader = testPage
+      .getByTestId(`workflow-lane-${second.workflowId}`)
+      .getByTestId("swimlane-header");
+    await secondHeader.getByRole("button", { name: "Compact second 1 task", exact: true }).click();
+    await testPage.getByRole("button", { name: "Collapse Compact second", exact: true }).click();
     await expect(secondColumn).toHaveCount(0);
     await expectCompactColumn(firstColumn);
-    await toggle.click();
+    await secondHeader.getByRole("button", { name: "Compact second 1", exact: true }).click();
     await expectCompactColumn(secondColumn);
     await selectHeightWorkflow(testPage, "E2E Workflow");
     await expect(secondColumn).toHaveCount(0);
