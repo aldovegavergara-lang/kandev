@@ -4,8 +4,8 @@ import { AppThemeProvider, useTheme } from "@/components/theme/app-theme";
 import { ReactNode, useEffect } from "react";
 
 const TITLEBAR_THEME_COLORS = {
-  light: "#ffffff",
-  dark: "#181818",
+  light: "#faf7fc",
+  dark: "#211b2c",
 } as const;
 const OVERLAY_THEME_COLOR_SELECTOR = 'meta[data-kandev-window-controls-theme-color="true"]';
 

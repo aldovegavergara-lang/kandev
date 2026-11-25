@@ -80,7 +80,7 @@ export function KanbanCardBody({
     <>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <RepoChipRow chips={repositoryChips} />
+          <span className="console-card-id">{task.id.slice(0, 8)}</span>
           <div className="flex items-center gap-1 min-w-0" data-testid="kanban-card-title-row">
             <CardTitle task={task} enableTitleHover={enableTitleHover} />
             <KanbanCardPriorityIndicator priority={task.priority} />
@@ -131,6 +131,11 @@ export function KanbanCardBody({
       <KanbanCardRelationship task={task} />
       <KanbanCardBadges task={task} />
       <TaskCardTags task={task} />
+      {repositoryChips.length > 0 && (
+        <div className="console-card-footer">
+          <RepoChipRow chips={repositoryChips} />
+        </div>
+      )}
     </>
   );
 }
@@ -272,6 +277,8 @@ export function KanbanCardShell({
       ref={setNodeRef}
       style={style}
       data-testid={`task-card-${task.id}`}
+      data-console-card
+      data-console-selected={isSelected || isPreviewed || undefined}
       data-kanban-card=""
       className={getKanbanCardShellClassName(task, {
         isSelected,

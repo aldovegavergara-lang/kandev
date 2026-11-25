@@ -1053,6 +1053,8 @@ it; double-click opens it directly.
 
 ## Find and organize tasks
 
+The Kanban board is a sound console. In standby, the display shows the number of visible tasks per channel relative to the busiest column. Each channel button shows its visible card count and any queued work. Select it to focus that column on desktop or switch to it on mobile. During a run the display follows the most recent agent activity, identifies its workflow channel, and links to the task. The spectrum pulses briefly on reported activity. It produces no audio.
+
 A running agent has a small activity meter on its Kanban card. A short pulse
 marks a reply or a tool event. The label and timestamp identify the most
 recent observation, including file reads, edits, searches and commands.

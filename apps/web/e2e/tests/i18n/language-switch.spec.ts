@@ -71,6 +71,13 @@ test.describe("i18n language switcher", () => {
 
   for (const locale of [
     {
+      id: "es",
+      option: "Español",
+      displayLanguage: "Idioma de la interfaz",
+      screenshot: "spanish-locale-desktop",
+      caption: "Appearance settings with Spanish active",
+    },
+    {
       id: "zh-tw",
       option: "繁體中文（台灣）",
       displayLanguage: "顯示語言",

@@ -1,7 +1,7 @@
 import type { BootPayload } from "@/src/boot-payload";
 
 import { readLocaleCookie } from "./cookie";
-import { DEFAULT_LOCALE, normalizeLocale, type SupportedLocale } from "./index";
+import { DEFAULT_LOCALE, isSupportedLocale, normalizeLocale, type SupportedLocale } from "./index";
 
 /**
  * True when the pseudo QA locale should be offered in the switcher.
@@ -18,7 +18,8 @@ export function pseudoLocaleAvailable(payload: BootPayload | undefined): boolean
 
 /**
  * Resolve the locale to activate before first paint. Precedence:
- *   boot payload (set by the Go shell from the cookie) → cookie → default.
+ *   negotiated server locale → explicit supported preference → server default.
+ * A server running during a frontend upgrade can fall back to English for a newer locale.
  * Any unknown value coerces to `en`.
  */
 export function resolveInitialLocale(
@@ -26,11 +27,11 @@ export function resolveInitialLocale(
   doc: Document | undefined = typeof document === "undefined" ? undefined : document,
 ): SupportedLocale {
   const fromPayload = payload?.runtime?.locale;
-  if (fromPayload) {
+  if (fromPayload && fromPayload !== DEFAULT_LOCALE) {
     return normalizeLocale(fromPayload);
   }
   const fromCookie = doc ? readLocaleCookie(doc) : undefined;
-  if (fromCookie) {
+  if (fromCookie && isSupportedLocale(fromCookie)) {
     return normalizeLocale(fromCookie);
   }
   return DEFAULT_LOCALE;

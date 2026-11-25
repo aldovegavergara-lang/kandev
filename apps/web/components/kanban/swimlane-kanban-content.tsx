@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { SoundConsole } from "./sound-console";
 import { KanbanColumn } from "@/components/kanban-column";
 import { type Task } from "@/components/kanban-card";
 import type { WorkflowStep } from "@/components/kanban-column";
@@ -40,6 +41,7 @@ import { KanbanOverflowFades } from "./kanban-overflow-fades";
 export type SwimlaneKanbanContentProps = {
   compactHeight?: boolean;
   workflowId: string;
+  workflowName?: string;
   steps: WorkflowStep[];
   moveTargetSteps: WorkflowStep[];
   tasks: Task[];
@@ -387,6 +389,7 @@ function renderKanbanLayout({
 // eslint-disable-next-line max-lines-per-function -- composes compact sizing, keyboard reorder, and responsive layouts.
 export function SwimlaneKanbanContent({
   compactHeight = false,
+  workflowName,
   workflowId,
   steps,
   moveTargetSteps,
@@ -474,7 +477,25 @@ export function SwimlaneKanbanContent({
   });
 
   return (
-    <>
+    <div className="sound-console-layout">
+      <SoundConsole
+        steps={displaySteps}
+        tasks={displayTasks}
+        workflowName={workflowName}
+        onOpenTask={onOpenTask}
+        onSelectChannel={(index) => {
+          if (isMobile) {
+            setActiveIndex(index);
+            return;
+          }
+          const id = displaySteps[index].id;
+          const column = drag.boardRef.current?.querySelector<HTMLElement>(
+            '[data-console-column="' + CSS.escape(id) + '"]',
+          );
+          column?.scrollIntoView({ block: "nearest", inline: "center" });
+          column?.focus({ preventScroll: true });
+        }}
+      />
       <div
         role="status"
         aria-live="polite"
@@ -492,6 +513,6 @@ export function SwimlaneKanbanContent({
         activeTask={drag.activeTask}
         boardRef={drag.boardRef}
       />
-    </>
+    </div>
   );
 }

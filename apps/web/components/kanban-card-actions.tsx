@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useRef, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconArrowsMaximize, IconDots } from "@tabler/icons-react";
 import {
@@ -69,6 +69,7 @@ function KanbanCardMenu(props: KanbanCardMenuProps) {
   const { menuEntries } = props;
   const delegate = useContext(DelegateCardContext);
   const isProcessing = isDeleting || isArchiving;
+  const touchTrigger = useRef(false);
 
   return (
     <DropdownMenu
@@ -84,8 +85,19 @@ function KanbanCardMenu(props: KanbanCardMenuProps) {
           ref={menuTriggerRef}
           type="button"
           className="text-muted-foreground hover:text-foreground hover:bg-muted inline-flex h-11 min-h-11 w-11 min-w-11 items-center justify-center rounded-sm p-0 transition-colors cursor-pointer sm:h-auto sm:min-h-0 sm:w-auto sm:min-w-0 sm:p-1 sm:-m-1"
-          onClick={(e) => e.stopPropagation()}
-          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (touchTrigger.current) {
+              touchTrigger.current = false;
+              setMenuOpen(!effectiveMenuOpen);
+              onPRMenuOpenChange?.(!effectiveMenuOpen);
+            }
+          }}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            touchTrigger.current = e.pointerType === "touch";
+            if (touchTrigger.current) e.preventDefault();
+          }}
           aria-label={t("kanban:moreOptions")}
         >
           <IconDots className="h-4 w-4" />

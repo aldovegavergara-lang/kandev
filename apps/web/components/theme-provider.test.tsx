@@ -31,8 +31,8 @@ function ThemeSwitch() {
 describe("ThemeProvider desktop PWA title bar", () => {
   beforeEach(() => {
     document.head.innerHTML = `
-      <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
-      <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
+      <meta name="theme-color" content="#faf7fc" media="(prefers-color-scheme: light)" />
+      <meta name="theme-color" content="#211b2c" media="(prefers-color-scheme: dark)" />
     `;
     window.localStorage.setItem("theme", "dark");
     vi.stubGlobal("matchMedia", () => ({
@@ -67,7 +67,7 @@ describe("ThemeProvider desktop PWA title bar", () => {
       expect(themeColors).toHaveLength(3);
       const activeThemeColor = document.head.querySelector(OVERLAY_THEME_COLOR_SELECTOR);
       expect(activeThemeColor).not.toBeNull();
-      expect(activeThemeColor?.getAttribute("content")).toBe("#181818");
+      expect(activeThemeColor?.getAttribute("content")).toBe("#211b2c");
       expect(activeThemeColor?.hasAttribute("media")).toBe(false);
       expect(themeColors[1].getAttribute("media")).toBe("(prefers-color-scheme: light)");
       expect(themeColors[2].getAttribute("media")).toBe("(prefers-color-scheme: dark)");
@@ -78,7 +78,7 @@ describe("ThemeProvider desktop PWA title bar", () => {
     await waitFor(() => {
       expect(
         document.head.querySelector(OVERLAY_THEME_COLOR_SELECTOR)?.getAttribute("content"),
-      ).toBe("#ffffff");
+      ).toBe("#faf7fc");
     });
   });
 
@@ -99,7 +99,7 @@ describe("ThemeProvider desktop PWA title bar", () => {
     await waitFor(() => {
       expect(
         document.head.querySelector(OVERLAY_THEME_COLOR_SELECTOR)?.getAttribute("content"),
-      ).toBe("#181818");
+      ).toBe("#211b2c");
     });
 
     act(() => overlay.publish(false));

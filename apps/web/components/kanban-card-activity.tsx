@@ -11,7 +11,7 @@ import "./kanban-card-activity.css";
 
 type Beat = NonNullable<TaskStatusSummary["agent_activity"]>;
 
-const beatLabels = {
+export const beatLabels = {
   reply: "activityReply",
   tool: "activityTool",
   tool_read: "activityRead",
@@ -84,7 +84,7 @@ function sessionActivity(task: Task) {
   return null;
 }
 
-function cardActivity(task: Task) {
+export function cardActivity(task: Task) {
   const pending = task.statusSummary
     ? task.statusSummary.pending_action
     : (task.taskPendingAction ??

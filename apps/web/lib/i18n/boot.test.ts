@@ -36,6 +36,11 @@ describe("resolveInitialLocale", () => {
     expect(resolveInitialLocale(payloadWithLocale())).toBe("ko");
   });
 
+  it("honors a newly supported preference while the running server still falls back to English", () => {
+    document.cookie = `${LOCALE_COOKIE}=es; path=/`;
+    expect(resolveInitialLocale(payloadWithLocale("en"))).toBe("es");
+  });
+
   it("defaults to en when neither payload nor cookie is present", () => {
     expect(resolveInitialLocale(undefined)).toBe("en");
   });

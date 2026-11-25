@@ -142,5 +142,12 @@
   "selectTasks": "Śēĺēćţ ţàśķś",
   "cancelTaskSelection": "Ćàńćēĺ śēĺēćţĩōń",
   "groupTasksIntoSectionsByWorkflowStep": "Ĝŕōũƥ ţàśķś ĩńţō śēćţĩōńś ƀŷ ŵōŕķƒĺōŵ śţēƥ, ŵōŕķƒĺōŵ, ŕēƥōśĩţōŕŷ, ƥĺũĝĩń-ƥŕōvĩďēď vàĺũēś, ōŕ ńōńē.",
-  "graph": "Ĝŕàƥĥ"
+  "graph": "Ĝŕàƥĥ",
+  "soundConsole": "［Şöüñđ çôñšöļë］",
+  "consoleLive": "［Ôñ åîŕ］",
+  "consoleStandby": "［Šţåñđƀý］",
+  "consoleLoad": "［Çĥåññëļ ļôåđ］",
+  "consoleChannel": "［Çĥåññëļ {{number}}］",
+  "consoleTrackCount_one": "［{{count}} ţåšk］",
+  "consoleTrackCount_other": "［{{count}} ţåškš］"
 }

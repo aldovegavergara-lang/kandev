@@ -20,6 +20,7 @@ export const DEFAULT_LOCALE = "en";
 export const DEFAULT_NAMESPACE = "common";
 export const SUPPORTED_LOCALES = [
   "en",
+  "es",
   "pt-pt",
   "zh-cn",
   "zh-tw",
@@ -34,6 +35,7 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 // i18n-exempt: fixed endonyms: each locale names itself in its own language, in every UI locale.
 export const LOCALE_LABELS: Record<SupportedLocale, string> = {
   en: "English",
+  es: "Español",
   "pt-pt": "Português (Portugal)",
   "zh-cn": "简体中文",
   "zh-tw": "繁體中文（台灣）",

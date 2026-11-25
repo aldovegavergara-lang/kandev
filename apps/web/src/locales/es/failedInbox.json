@@ -1,0 +1,18 @@
+{
+  "tabLabel": "Falló",
+  "openTask": "Abrir tarea",
+  "reasonUnknown": "No se registró ninguna razón de fracaso.",
+  "unknownFailureTime": "Tiempo de fallo desconocido",
+  "originAgentCreated": "Creado por un agente",
+  "originRoutine": "Creado por una rutina",
+  "originOnboarding": "Creado durante la incorporación",
+  "originAutomationRun": "Ejecución de la automatización",
+  "originAutomationTask": "Creado por automatización",
+  "originGeneric": "Automatizado",
+  "emptyTitle": "Nada ha fallado en {{workspace}}.",
+  "emptyTitleUnnamedWorkspace": "Nada ha fallado en este espacio de trabajo.",
+  "emptyDescription": "Las tareas fallidas aparecen aquí para el triaje. Nunca se cuentan hacia el total de la barra lateral.",
+  "errorTitle": "No se pudieron cargar las tareas fallidas",
+  "errorDescription": "No se pudieron cargar las tareas fallidas. El Kandev se reintentará automáticamente.",
+  "truncatedNotice": "Mostrar las primeras tareas fallidas. Más están esperando."
+}

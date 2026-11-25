@@ -1,3 +1,4 @@
+import es from "./locales/es.json";
 import en from "./locales/en.json";
 import ja from "./locales/ja.json";
 import ptPt from "./locales/pt-pt.json";
@@ -7,6 +8,7 @@ import zhTw from "./locales/zh-tw.json";
 
 const dictionaries = {
   en,
+  es,
   "pt-pt": ptPt,
   "zh-cn": zhCn,
   "zh-hk": zhHk,
@@ -33,6 +35,7 @@ export function getStartupText(
 function resolveStartupLocale(languages: readonly string[]): StartupLocale {
   for (const language of languages) {
     const normalized = language.toLowerCase().replaceAll("_", "-");
+    if (/^es(?:-|$)/.test(normalized)) return "es";
     if (normalized.startsWith("pt")) return "pt-pt";
     if (normalized.startsWith("ja")) return "ja";
     if (normalized.startsWith("zh")) {

@@ -46,6 +46,7 @@ const LocaleCookie = "kandev_locale"
 // with SUPPORTED_LOCALES in apps/web/lib/i18n/index.ts.
 var supportedLocales = map[string]bool{
 	"en":     true,
+	"es":     true,
 	"pt-pt":  true,
 	"zh-cn":  true,
 	"zh-tw":  true,

@@ -142,5 +142,12 @@
   "bulkActions": "작업",
   "selectTasks": "작업 선택",
   "cancelTaskSelection": "선택 취소",
-  "graph": "그래프"
+  "graph": "그래프",
+  "soundConsole": "사운드 콘솔",
+  "consoleLive": "실행 중",
+  "consoleStandby": "대기 중",
+  "consoleLoad": "채널 부하",
+  "consoleChannel": "채널 {{number}}",
+  "consoleTrackCount_one": "작업 {{count}}개",
+  "consoleTrackCount_other": "작업 {{count}}개"
 }

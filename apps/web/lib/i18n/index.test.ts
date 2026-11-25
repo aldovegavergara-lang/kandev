@@ -85,6 +85,7 @@ describe("locale predicates", () => {
     expect(DEFAULT_LOCALE).toBe("en");
     expect([...SUPPORTED_LOCALES]).toEqual([
       "en",
+      "es",
       "pt-pt",
       "zh-cn",
       "zh-tw",
@@ -102,6 +103,7 @@ describe("locale predicates", () => {
   it("hides the pseudo locale from production builds", () => {
     expect(selectableLocales(false)).toEqual([
       "en",
+      "es",
       "pt-pt",
       "zh-cn",
       "zh-tw",
@@ -110,7 +112,16 @@ describe("locale predicates", () => {
       "ko",
       "pseudo",
     ]);
-    expect(selectableLocales(true)).toEqual(["en", "pt-pt", "zh-cn", "zh-tw", "zh-hk", "ja", "ko"]);
+    expect(selectableLocales(true)).toEqual([
+      "en",
+      "es",
+      "pt-pt",
+      "zh-cn",
+      "zh-tw",
+      "zh-hk",
+      "ja",
+      "ko",
+    ]);
   });
 
   /**
@@ -180,6 +191,7 @@ describe("activateLocale", () => {
 
   it.each([
     ["Simplified Chinese", ZH_CN_LOCALE, ZH_CN_LOCALE, "显示语言"],
+    ["Spanish (Chile)", "es-CL", "es", "Idioma de la interfaz"],
     ["European Portuguese", "pt-PT", PT_PT_LOCALE, "Idioma de apresentação"],
     ["Traditional Chinese (Taiwan)", ZH_TW_LOCALE, ZH_TW_LOCALE, "顯示語言"],
     ["Traditional Chinese (Hong Kong)", "zh-HK", ZH_HK_LOCALE, "顯示語言"],

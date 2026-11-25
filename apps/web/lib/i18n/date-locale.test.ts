@@ -68,6 +68,7 @@ describe("formatTimeDistance", () => {
 describe("resolveDateLocale", () => {
   it.each([
     ["en", "en-US"],
+    ["es", "es"],
     ["pt-pt", "pt"],
     ["zh-cn", "zh-CN"],
     ["zh-tw", "zh-TW"],

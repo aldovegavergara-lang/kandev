@@ -239,6 +239,7 @@ const WorkflowItemContent = memo(function WorkflowItemContent({
     snapshot || viewProps.mobileWorkflowNavigation ? (
       <ViewComponent
         workflowId={wf.id}
+        workflowName={wf.name}
         steps={steps}
         moveTargetSteps={moveTargetSteps}
         tasks={tasks}

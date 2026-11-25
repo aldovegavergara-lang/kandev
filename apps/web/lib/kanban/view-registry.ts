@@ -12,6 +12,7 @@ export type ViewContentProps = {
   /** True when this is the sole rendered workflow lane and should fill the available height. */
   fillHeight?: boolean;
   workflowId: string;
+  workflowName?: string;
   steps: WorkflowStep[];
   moveTargetSteps: WorkflowStep[];
   tasks: Task[];

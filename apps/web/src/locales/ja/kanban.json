@@ -142,5 +142,12 @@
   "selectTasks": "タスクを選択",
   "cancelTaskSelection": "選択をキャンセル",
   "groupTasksIntoSectionsByWorkflowStep": "タスクをワークフローのステップ、ワークフロー、リポジトリ、プラグインが提供する値でセクションにまとめるか、グループ化しない設定を選びます。",
-  "graph": "グラフ"
+  "graph": "グラフ",
+  "soundConsole": "サウンドコンソール",
+  "consoleLive": "稼働中",
+  "consoleStandby": "待機中",
+  "consoleLoad": "チャンネル負荷",
+  "consoleChannel": "チャンネル {{number}}",
+  "consoleTrackCount_one": "タスク {{count}} 件",
+  "consoleTrackCount_other": "タスク {{count}} 件"
 }

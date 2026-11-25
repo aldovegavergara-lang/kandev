@@ -46,7 +46,8 @@ export function createOfflineCopyScript(localeRoot: string): string {
       if (locale.startsWith("zh-hk") || locale.startsWith("zh-hant-hk")) locale = "zh-hk";
       else if (locale.startsWith("zh-tw") || locale.startsWith("zh-hant")) locale = "zh-tw";
       else if (locale.startsWith("zh")) locale = "zh-cn";
-      else if (locale.startsWith("pt")) locale = "pt-pt";
+      else if (/^es(?:-|$)/.test(locale)) locale = "es";
+    else if (locale.startsWith("pt")) locale = "pt-pt";
       else locale = locale.split("-")[0];
     }
     const copy = Object.prototype.hasOwnProperty.call(messages, locale) ? messages[locale] : messages.en;

@@ -142,5 +142,12 @@
   "cancelTaskSelection": "取消选择",
   "bulkSelected_one": "已选择 {{count}} 个",
   "groupTasksIntoSectionsByWorkflowStep": "按工作流步骤、工作流、仓库、插件提供的值分组，或不分组。",
-  "graph": "关系图"
+  "graph": "关系图",
+  "soundConsole": "调音台",
+  "consoleLive": "运行中",
+  "consoleStandby": "待机",
+  "consoleLoad": "声道负载",
+  "consoleChannel": "声道 {{number}}",
+  "consoleTrackCount_one": "{{count}} 项任务",
+  "consoleTrackCount_other": "{{count}} 项任务"
 }

@@ -142,5 +142,12 @@
   "selectTasks": "Select tasks",
   "cancelTaskSelection": "Cancel selection",
   "groupTasksIntoSectionsByWorkflowStep": "Group tasks into sections by workflow step, workflow, repository, plugin-provided values, or none.",
-  "graph": "Graph"
+  "graph": "Graph",
+  "soundConsole": "Sound console",
+  "consoleLive": "On air",
+  "consoleStandby": "Standby",
+  "consoleLoad": "Channel load",
+  "consoleChannel": "Channel {{number}}",
+  "consoleTrackCount_one": "{{count}} task",
+  "consoleTrackCount_other": "{{count}} tasks"
 }

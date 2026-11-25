@@ -22,6 +22,10 @@ test("delegates a card by touch", async ({ testPage, apiClient, seedData }) => {
   });
   const board = new MobileKanbanPage(testPage);
   await board.goto();
+  const channels = testPage.getByRole("group", { name: "Channel load" });
+  await channels.getByRole("button", { name: /Review/ }).tap();
+  await expect(board.boardNavigator).toContainText("Review");
+  await channels.getByRole("button", { name: /In Progress/ }).tap();
   await board.taskCard(task.id).getByRole("button", { name: "More options" }).tap();
   await testPage.getByRole("menuitem", { name: "Delegate to an agent" }).tap();
   const dialog = testPage.getByRole("dialog");

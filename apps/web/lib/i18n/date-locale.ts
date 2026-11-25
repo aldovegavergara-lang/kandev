@@ -36,6 +36,7 @@ import { DEFAULT_LOCALE, i18n, normalizeLocale, type SupportedLocale } from "./i
  * strings rather than our catalog.
  */
 const LAZY_LOCALES: Partial<Record<SupportedLocale, () => Promise<Locale>>> = {
+  es: () => import("date-fns/locale/es").then((m) => m.es),
   "pt-pt": () => import("date-fns/locale/pt").then((m) => m.pt),
   "zh-cn": () => import("date-fns/locale/zh-CN").then((m) => m.zhCN),
   "zh-tw": () => import("date-fns/locale/zh-TW").then((m) => m.zhTW),
