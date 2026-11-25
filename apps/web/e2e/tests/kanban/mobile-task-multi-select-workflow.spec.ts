@@ -10,6 +10,7 @@ test("phone bulk move uses the focused workflow", async ({ testPage, apiClient, 
   });
   const board = new KanbanPage(testPage);
   await board.goto();
+  await testPage.getByTestId("mobile-board-navigator").tap();
   await testPage.getByTestId("mobile-select-tasks").tap();
   await board.taskCard(task.id).tap();
   await expect(board.multiSelectToolbar).toContainText("1 selected");

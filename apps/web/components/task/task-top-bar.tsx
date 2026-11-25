@@ -352,7 +352,7 @@ function GitHubIssueTopbarButton({
           data-testid="issue-topbar-button"
           data-issue-number={issueNumber}
           size="sm"
-          variant="outline"
+          variant="ghost"
           className="cursor-pointer gap-1.5 px-2"
         >
           <Link href={issueUrl} target="_blank" rel="noopener noreferrer">
@@ -467,7 +467,7 @@ function TopBarRight({
       )}
       {officeTaskHref && (
         <TopbarCluster label={t("task:openInOfficeView")} className="[&_a]:h-7 [&_a]:text-xs">
-          <Button asChild size="sm" variant="outline" className="cursor-pointer px-2">
+          <Button asChild size="sm" variant="ghost" className="cursor-pointer px-2">
             <Link href={officeTaskHref}>{t("task:openInOfficeView")}</Link>
           </Button>
         </TopbarCluster>

@@ -533,7 +533,7 @@ export function ChatInputBody({
       />
       <div
         className={cn(
-          "flex flex-col overflow-hidden border rounded ",
+          "flex flex-col overflow-hidden rounded-xl border focus-within:ring-2 focus-within:ring-ring/60",
           "bg-background border-border",
           needsRecovery && "opacity-40 pointer-events-none border-red-500/30",
           isStarting && !isAgentBusy && "chat-input-starting",

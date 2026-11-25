@@ -262,6 +262,11 @@ test("a retained empty workflow keeps compact recovery controls", async ({
     const kanban = new KanbanPage(testPage);
     await kanban.goto();
     await expectCompactColumn(kanban.columnByStepId(seedData.startStepId));
+    await testPage
+      .getByTestId(`workflow-lane-${second.workflowId}`)
+      .locator('button[aria-haspopup="dialog"]')
+      .first()
+      .click();
     await testPage.getByTestId(`columns-menu-${second.workflowId}`).click();
     await testPage.getByTestId(`columns-menu-step-${second.stepId}`).click();
     await testPage.keyboard.press("Escape");

@@ -66,7 +66,7 @@ export function SurfaceAction(props: SurfaceActionProps) {
   return (
     <Button
       type="button"
-      variant={props.surface === "topbar" ? "outline" : "ghost"}
+      variant="ghost"
       size={props.surface === "status-bar" ? "sm" : "default"}
       ref={props.ref}
       id={props.id}

@@ -18,9 +18,14 @@ test("phone selection supports color, dismissal, clearing, and bulk actions", as
   const board = new KanbanPage(testPage);
   await board.goto();
   const select = testPage.getByTestId("mobile-select-tasks");
+  const boardNavigator = testPage.getByTestId("mobile-board-navigator");
+  await boardNavigator.tap();
+  await expect(select).toHaveAttribute("aria-pressed", "false");
   await select.tap();
+  await boardNavigator.tap();
   await expect(select).toHaveAttribute("aria-pressed", "true");
   await select.tap();
+  await boardNavigator.tap();
   await expect(select).toHaveAttribute("aria-pressed", "false");
   await select.tap();
   await board.taskCard(a.id).tap();

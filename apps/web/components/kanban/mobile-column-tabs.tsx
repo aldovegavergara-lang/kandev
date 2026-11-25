@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BoardSelectionButton } from "./board-actions";
 import { Badge } from "@kandev/ui/badge";
 import { Button } from "@kandev/ui/button";
 import {
@@ -177,9 +178,11 @@ function NavigatorDrawerContent({
   allStepsAutoHidden,
   onSelectStep,
   onSelectWorkflow,
+  onClose,
 }: Omit<MobileColumnTabsProps, "onColumnChange"> & {
   onSelectStep: (index: number) => void;
   onSelectWorkflow: (workflowId: string) => void;
+  onClose: () => void;
 }) {
   const { t } = useTranslation();
   return (
@@ -202,6 +205,7 @@ function NavigatorDrawerContent({
           separated={!!workflowNavigation}
           allStepsAutoHidden={allStepsAutoHidden}
         />
+        <BoardSelectionButton onDone={onClose} touch />
       </div>
     </DrawerContent>
   );
@@ -406,6 +410,7 @@ export function MobileColumnTabs({
         allStepsAutoHidden={allStepsAutoHidden}
         onSelectStep={selectStep}
         onSelectWorkflow={selectWorkflow}
+        onClose={() => setOpen(false)}
       />
     </Drawer>
   );

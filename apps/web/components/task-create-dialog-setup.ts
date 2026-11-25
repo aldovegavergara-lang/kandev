@@ -209,6 +209,7 @@ function useSubmitHandlersWiring({
     workspaceId,
     workflowId,
     effectiveWorkflowId: computed.effectiveWorkflowId,
+    creationStepId: computed.effectiveWorkflowId === workflowId ? props.creationStepId : undefined,
     repositories: fs.repositories,
     repositoriesDirty: fs.repositoriesDirty,
     discoveredRepositories: fs.discoveredRepositories,

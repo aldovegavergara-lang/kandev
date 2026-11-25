@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { SoundConsole } from "./sound-console";
 import { KanbanColumn } from "@/components/kanban-column";
 import { type Task } from "@/components/kanban-card";
@@ -42,6 +42,7 @@ export type SwimlaneKanbanContentProps = {
   compactHeight?: boolean;
   workflowId: string;
   workflowName?: string;
+  workflowHeader?: ReactNode;
   steps: WorkflowStep[];
   moveTargetSteps: WorkflowStep[];
   tasks: Task[];
@@ -390,6 +391,7 @@ function renderKanbanLayout({
 export function SwimlaneKanbanContent({
   compactHeight = false,
   workflowName,
+  workflowHeader,
   workflowId,
   steps,
   moveTargetSteps,
@@ -465,7 +467,16 @@ export function SwimlaneKanbanContent({
   });
 
   const desktopEmptyState = getDesktopEmptyState(isMobile, displaySteps, moveTargetSteps);
-  if (desktopEmptyState !== undefined) return desktopEmptyState;
+  if (desktopEmptyState !== undefined) {
+    return workflowHeader ? (
+      <div className="px-4">
+        {workflowHeader}
+        {desktopEmptyState}
+      </div>
+    ) : (
+      desktopEmptyState
+    );
+  }
 
   const layoutContent = renderKanbanLayout({
     isMobile,
@@ -482,6 +493,7 @@ export function SwimlaneKanbanContent({
         steps={displaySteps}
         tasks={displayTasks}
         workflowName={workflowName}
+        workflowHeader={workflowHeader}
         onOpenTask={onOpenTask}
         onSelectChannel={(index) => {
           if (isMobile) {

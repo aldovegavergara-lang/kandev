@@ -353,6 +353,7 @@ export function useTaskSubmitHandlers({
   workspaceId,
   workflowId,
   effectiveWorkflowId,
+  creationStepId,
   repositories,
   repositoriesDirty,
   discoveredRepositories,
@@ -898,6 +899,7 @@ export function useTaskSubmitHandlers({
         const payload = buildCreateTaskPayload({
           workspaceId,
           effectiveWorkflowId,
+          creationStepId,
           trimmedTitle: opts.trimmedTitle,
           trimmedDescription: opts.trimmedDescription,
           autoTitle,
@@ -972,6 +974,7 @@ export function useTaskSubmitHandlers({
     [
       workspaceId,
       effectiveWorkflowId,
+      creationStepId,
       autoFocusNewTasks,
       autoTitle,
       blockedBy,
@@ -1262,6 +1265,7 @@ export function useTaskSubmitHandlers({
           const p = buildCreateTaskPayload({
             workspaceId: workspaceId as string,
             effectiveWorkflowId: effectiveWorkflowId as string,
+            creationStepId,
             trimmedTitle,
             trimmedDescription,
             autoTitle,
@@ -1313,6 +1317,7 @@ export function useTaskSubmitHandlers({
       autoTitle,
       workspaceId,
       effectiveWorkflowId,
+      creationStepId,
       agentProfileId,
       executorId,
       executorProfileId,

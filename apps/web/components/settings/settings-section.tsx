@@ -14,10 +14,7 @@ type SettingsSectionProps = {
   discoveryTargetId?: string;
   framed?: boolean;
   /**
-   * Rule the heading off from the body. For a section that *is* its page — the
-   * workspace Repositories and Workflows tabs, which have no page heading of
-   * their own — so it carries the same line under its title that the sibling
-   * tabs have under theirs.
+   * Add breathing room below the heading when the section is the page.
    */
   divided?: boolean;
 };
@@ -48,7 +45,7 @@ export function SettingsSection({
       action={action}
       discoveryTargetId={discoveryTargetId}
       frame={framed ? "card" : "none"}
-      contentClassName={divided ? "border-t border-border/70" : undefined}
+      contentClassName={divided ? "pt-4" : undefined}
     >
       {children}
     </SettingsGroup>

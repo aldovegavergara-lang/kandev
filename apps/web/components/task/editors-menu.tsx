@@ -91,7 +91,7 @@ function OpenEditorButton({
   ) : (
     <IconCode className="h-4 w-4" />
   );
-  const buttonClass = "rounded-none border-0 cursor-pointer px-2 focus-visible:ring-inset";
+  const buttonClass = "cursor-pointer px-2 focus-visible:ring-inset";
 
   // Multi-worktree sessions get a picker instead of opening the first worktree.
   // The focusable span keeps the tooltip reachable while the button is
@@ -105,8 +105,9 @@ function OpenEditorButton({
               <DropdownMenuTrigger asChild>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="ghost"
                   className={buttonClass}
+                  aria-label={tooltip}
                   data-testid="editors-menu-open"
                   disabled={disabled}
                 >
@@ -130,8 +131,9 @@ function OpenEditorButton({
         <span tabIndex={disabled ? 0 : -1} className="inline-flex">
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
             className={buttonClass}
+            aria-label={tooltip}
             data-testid="editors-menu-open"
             onClick={() => onOpen()}
             disabled={disabled}
@@ -195,7 +197,7 @@ export function EditorsMenu({ activeSessionId, embeddedVscodeSupported }: Editor
   };
 
   return (
-    <div className="inline-flex h-7 rounded-md border border-border overflow-hidden">
+    <div className="inline-flex h-7 items-center gap-0.5">
       <OpenEditorButton
         disabled={!activeSessionId || openEditor.isLoading || enabledEditors.length === 0}
         isLoading={openEditor.isLoading}

@@ -23,6 +23,7 @@ test("phone bulk move shows the refusal and keeps every task in its source step"
   );
   const kanban = new KanbanPage(testPage);
   await kanban.goto();
+  await testPage.getByTestId("mobile-board-navigator").tap();
   await testPage.getByTestId("mobile-select-tasks").tap();
   for (const task of tasks) await kanban.taskCard(task.id).tap();
 

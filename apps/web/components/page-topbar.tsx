@@ -595,7 +595,7 @@ export const PageTopbar = forwardRef<HTMLElement, PageTopbarProps>(function Page
       data-testid={testId}
       data-window-controls-overlay-region="content"
       className={cn(
-        "relative flex shrink-0 items-center gap-3 border-b px-3 py-1",
+        "relative flex shrink-0 items-center gap-3 border-b border-[color:var(--chrome-divider)] px-3 py-1",
         TOPBAR_HEIGHT_CLASSNAME,
         className,
       )}

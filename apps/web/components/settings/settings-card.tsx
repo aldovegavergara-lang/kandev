@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, type ComponentProps, type Ref } from "react";
+import { cn } from "@/lib/utils";
 import { Card } from "@kandev/ui/card";
 import { useSettingsTargetRegistration } from "./settings-target-provider";
 
@@ -12,6 +13,7 @@ type SettingsCardProps = ComponentProps<typeof Card> & {
 export function SettingsCard({
   isDirty = false,
   discoveryTargetId,
+  className,
   ref,
   ...props
 }: SettingsCardProps) {
@@ -27,6 +29,7 @@ export function SettingsCard({
     <Card
       {...props}
       ref={mergedRef}
+      className={cn("border-transparent", className)}
       data-settings-dirty={isDirty}
       data-settings-dirty-level="card"
     />

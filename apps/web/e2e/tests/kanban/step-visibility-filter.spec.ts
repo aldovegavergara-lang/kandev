@@ -23,16 +23,20 @@ async function closeDisplayDropdown(kanban: KanbanPage) {
   await expect(trigger).not.toHaveAttribute("data-state", "open");
 }
 
-// Column visibility lives on the swimlane header of the workflow it
-// configures, so there is no group to expand and no eligibility set to reason
-// about — the lane already answers "which workflow is this?".
-// Opening is retried until the menu is actually open. The Display dropdown
-// that these scenarios close just beforehand keeps a dismissable layer alive
-// for a frame or two, and a click landing in that window is swallowed — the
-// trigger stays `data-state="closed"`. The asserted end state is unchanged.
+// The workflow counter opens the settings for its own lane.
+function workflowControls(kanban: KanbanPage, workflowId: string) {
+  return kanban.page
+    .getByTestId(`workflow-lane-${workflowId}`)
+    .locator('button[aria-haspopup="dialog"]')
+    .first();
+}
+
 async function openColumnsMenu(kanban: KanbanPage, workflowId: string) {
   const trigger = kanban.page.getByTestId(`columns-menu-${workflowId}`);
   await expect(async () => {
+    if (!(await trigger.isVisible())) {
+      await workflowControls(kanban, workflowId).click();
+    }
     if ((await trigger.getAttribute("data-state")) !== "open") {
       await trigger.click();
     }
@@ -46,6 +50,9 @@ async function closeColumnsMenu(kanban: KanbanPage, workflowId: string) {
     await kanban.page.keyboard.press("Escape");
   }
   await expect(trigger).not.toHaveAttribute("data-state", "open");
+  if (await kanban.page.getByTestId("display-settings-content").isVisible()) {
+    await kanban.page.keyboard.press("Escape");
+  }
 }
 
 // The menu deliberately stays open across item clicks, so several columns can
@@ -301,7 +308,7 @@ test.describe("Kanban step visibility filter", () => {
     await expect(kanban.taskCardByTitle(TASK_A_OTHER_STEP)).not.toBeVisible();
     await expect(kanban.columnByStepId(startStepAId)).not.toBeVisible();
     await expect(kanban.columnByStepId(secondStepAId)).not.toBeVisible();
-    await expect(testPage.getByTestId(`columns-menu-${workflowAId}`)).toBeVisible({
+    await expect(workflowControls(kanban, workflowAId)).toBeVisible({
       timeout: TASK_VISIBLE_TIMEOUT,
     });
 
@@ -347,10 +354,10 @@ test.describe("Kanban step visibility filter", () => {
     await toggleColumns(kanban, workflowBId, [startStepBId]);
 
     await expect(kanban.board.getByText("No tasks yet")).toHaveCount(0);
-    await expect(testPage.getByTestId(`columns-menu-${workflowAId}`)).toBeVisible({
+    await expect(workflowControls(kanban, workflowAId)).toBeVisible({
       timeout: TASK_VISIBLE_TIMEOUT,
     });
-    await expect(testPage.getByTestId(`columns-menu-${workflowBId}`)).toBeVisible({
+    await expect(workflowControls(kanban, workflowBId)).toBeVisible({
       timeout: TASK_VISIBLE_TIMEOUT,
     });
   });

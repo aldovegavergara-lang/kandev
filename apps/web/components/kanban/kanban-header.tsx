@@ -277,7 +277,7 @@ function TabletHeader({
           <TooltipProvider>
             <ViewToggleGroup toggleValue={toggleValue} onValueChange={handleViewChange} size="lg" />
           </TooltipProvider>
-          {currentPage !== "threads" && (
+          {currentPage !== "threads" && currentPage !== "kanban" && (
             <KanbanDisplayDropdown
               triggerSize="icon-lg"
               currentPage={currentPage}
@@ -368,13 +368,15 @@ function DesktopHeader({
           <TooltipProvider>
             <ViewToggleGroup toggleValue={toggleValue} onValueChange={handleViewChange} size="lg" />
           </TooltipProvider>
-          <KanbanDisplayDropdown
-            triggerSize="icon-lg"
-            currentPage={currentPage}
-            pluginFilters={pluginTaskFilters.filters}
-            pluginFilterSelections={pluginTaskFilters.selections}
-            onPluginFilterChange={pluginTaskFilters.setFilterSelection}
-          />
+          {currentPage !== "kanban" && (
+            <KanbanDisplayDropdown
+              triggerSize="icon-lg"
+              currentPage={currentPage}
+              pluginFilters={pluginTaskFilters.filters}
+              pluginFilterSelections={pluginTaskFilters.selections}
+              onPluginFilterChange={pluginTaskFilters.setFilterSelection}
+            />
+          )}
           <HealthIndicatorButton
             hasIssues={showHealthIndicator}
             onClick={onOpenHealthDialog}

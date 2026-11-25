@@ -1,7 +1,6 @@
 "use client";
 
 import { CardContent } from "@kandev/ui/card";
-import { Separator } from "@kandev/ui/separator";
 import { SettingsCard } from "@/components/settings/settings-card";
 import { SettingsPageHeader } from "@/components/settings/settings-typography";
 import {
@@ -70,8 +69,6 @@ export function SettingsPageTemplate({
   return (
     <div className="space-y-8">
       {showPageChrome && (header ?? <SettingsPageHeader title={title} description={description} />)}
-
-      {showPageChrome && <Separator />}
 
       <SettingsSaveDirtyScope>
         {(nestedIsDirty) =>

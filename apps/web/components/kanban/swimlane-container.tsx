@@ -35,10 +35,12 @@ import { selectVisibleWorkflows } from "@/lib/kanban/workflow-swimlanes";
 import { reorderWorkflows } from "@/lib/api";
 import { SwimlaneSection } from "./swimlane-section";
 import { ColumnsMenu } from "./columns-menu";
+import { BoardWorkflowControls } from "./board-workflow-controls";
 import { deriveAutoHiddenStepIds } from "@/lib/kanban/auto-hide-empty-columns";
 import { sortWorkflowStepsByPosition } from "@/lib/kanban/workflow-step-order";
 import { useKanbanDisplaySettings } from "@/hooks/use-kanban-display-settings";
 import {
+  getDefaultView,
   getEffectiveView,
   type MobileWorkflowNavigation,
   type ViewContentProps,
@@ -235,11 +237,35 @@ const WorkflowItemContent = memo(function WorkflowItemContent({
     () => moveTargetSteps.filter((step) => !autoHiddenSet.has(step.id)),
     [moveTargetSteps, autoHiddenSet],
   );
+  const columnsMenu = (
+    <ColumnsMenu
+      workflowId={wf.id}
+      workflowName={wf.name}
+      steps={snapshotSteps}
+      hiddenStepIds={hiddenStepIds}
+      onToggle={onToggleStepVisibility}
+      autoHideEmpty={autoHideEmpty}
+      onToggleAutoHide={onToggleAutoHideEmpty}
+    />
+  );
+  const embedHeader =
+    !hideHeader && !isCollapsed && snapshot && ViewComponent === getDefaultView().component;
+  const workflowHeader = embedHeader ? (
+    <BoardWorkflowControls
+      name={wf.name}
+      count={tasks.length}
+      triggerTestId={onToggleMultiSelect ? undefined : `workflow-display-${wf.id}`}
+      onCollapse={onToggleCollapse}
+      columns={columnsMenu}
+      dragHandleProps={dragHandleProps}
+    />
+  ) : undefined;
   const content =
     snapshot || viewProps.mobileWorkflowNavigation ? (
       <ViewComponent
         workflowId={wf.id}
         workflowName={wf.name}
+        workflowHeader={workflowHeader}
         steps={steps}
         moveTargetSteps={moveTargetSteps}
         tasks={tasks}
@@ -250,7 +276,7 @@ const WorkflowItemContent = memo(function WorkflowItemContent({
       <div className="min-h-56" />
     );
 
-  if (hideHeader) {
+  if (hideHeader || embedHeader) {
     return <div className={fillHeight ? "h-full min-h-0" : undefined}>{content}</div>;
   }
 
@@ -262,20 +288,12 @@ const WorkflowItemContent = memo(function WorkflowItemContent({
       isCollapsed={isCollapsed}
       onToggleCollapse={onToggleCollapse}
       dragHandleProps={dragHandleProps}
-      onToggleMultiSelect={onToggleMultiSelect}
+      onToggleMultiSelect={
+        ViewComponent === getDefaultView().component ? undefined : onToggleMultiSelect
+      }
       isMultiSelectMode={viewProps.isMultiSelectMode}
       fillHeight={fillHeight}
-      columnsMenu={
-        <ColumnsMenu
-          workflowId={wf.id}
-          workflowName={wf.name}
-          steps={snapshotSteps}
-          hiddenStepIds={hiddenStepIds}
-          onToggle={onToggleStepVisibility}
-          autoHideEmpty={autoHideEmpty}
-          onToggleAutoHide={onToggleAutoHideEmpty}
-        />
-      }
+      columnsMenu={columnsMenu}
     >
       {content}
     </SwimlaneSection>
@@ -347,16 +365,6 @@ function getRenderedWorkflows(
 function getContainerClass(isMobileKanban: boolean, isMobile: boolean): string {
   if (isMobileKanban) return "flex flex-1 min-h-0 flex-col overflow-hidden pb-4";
   return `flex-1 min-h-0 space-y-3 overflow-y-auto pt-3 pb-4${isMobile ? "" : " px-4"}`;
-}
-
-function shouldHideHeaders(
-  isMobile: boolean,
-  isMobileKanban: boolean,
-  workflowFilter: string | null,
-  workflowCount: number,
-): boolean {
-  if (!isMobile) return false;
-  return isMobileKanban || workflowFilter !== null || workflowCount === 1;
 }
 
 type WorkflowItemsProps = {
@@ -458,6 +466,7 @@ type RenderedWorkflowLayoutOptions = {
   snapshots: Record<string, WorkflowSnapshotData>;
   hasLiveHiddenSteps: (workflowId: string) => boolean;
   isMobileKanban: boolean;
+  showEmptyBoard: boolean;
   workflowOptions: MobileWorkflowNavigation["workflows"];
   onWorkflowChange: SwimlaneContainerProps["onWorkflowChange"];
 };
@@ -469,6 +478,7 @@ function useRenderedWorkflowLayout({
   snapshots,
   hasLiveHiddenSteps,
   isMobileKanban,
+  showEmptyBoard,
   workflowOptions,
   onWorkflowChange,
 }: RenderedWorkflowLayoutOptions) {
@@ -478,7 +488,7 @@ function useRenderedWorkflowLayout({
       orderedWorkflows,
       hasTasks: (workflowId) => !snapshots[workflowId] || getFilteredTasks(workflowId).length > 0,
       hasLiveHiddenSteps,
-      showEmptyBoard: isMobileKanban,
+      showEmptyBoard,
     }),
   );
   const focusedWorkflowId = visibleWorkflows[0]?.id ?? null;
@@ -566,16 +576,13 @@ export function SwimlaneContainer(containerProps: SwimlaneContainerProps) {
       snapshots,
       hasLiveHiddenSteps,
       isMobileKanban,
+      showEmptyBoard: view.id === "kanban",
       workflowOptions,
       onWorkflowChange: containerProps.onWorkflowChange,
     });
 
-  const hideHeaders = shouldHideHeaders(
-    isMobile,
-    isMobileKanban,
-    workflowFilter,
-    orderedWorkflows.length,
-  );
+  const hideHeaders =
+    isMobile && (isMobileKanban || workflowFilter !== null || orderedWorkflows.length === 1);
   const demandRootRef = useWorkflowBoardDemand({
     workflowIds: renderedWorkflows.map((workflow) => workflow.id),
     collapsedIds: collapsedWorkflowIds(renderedWorkflows, isCollapsed, hideHeaders),

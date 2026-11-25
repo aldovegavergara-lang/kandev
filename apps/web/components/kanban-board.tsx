@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "@/lib/routing/client-router";
-import { Button } from "@kandev/ui/button";
+import { BoardActionsContext, useBoardTaskActions } from "./kanban/board-actions";
 import { Task } from "./kanban-card";
 import { TaskCreateDialog } from "./task-create-dialog";
 import { useAppStore, useAppStoreApi } from "@/components/state-provider";
@@ -398,6 +398,11 @@ function useKanbanBoardSetup(
 
 export function KanbanBoard({ onPreviewTask, onOpenTask, onBeforeEdit }: KanbanBoardProps = {}) {
   const s = useKanbanBoardSetup(onPreviewTask, onOpenTask, onBeforeEdit);
+  const backlogCreation = useBoardTaskActions(
+    s.handleCreate,
+    s.multiSelect.isMultiSelectMode,
+    s.multiSelect.toggleMultiSelect,
+  );
   const isMobileSearchOpen = useAppStore((state) => state.mobileKanban.isSearchOpen);
   const setMobileSearchOpen = useAppStore((state) => state.setMobileKanbanSearchOpen);
   const { taskMatchesPluginFilters } = usePluginTaskFilters();
@@ -410,18 +415,11 @@ export function KanbanBoard({ onPreviewTask, onOpenTask, onBeforeEdit }: KanbanB
   // the search bar after navigating to another route.
   useEffect(() => () => setMobileSearchOpen(false), [setMobileSearchOpen]);
 
-  // Memoized so the dialog/child components don't see a new array identity on
-  // every board re-render. Declared before the early return to keep hook order
-  // stable.
-  const stepOptions = useMemo(
-    () =>
-      s.effectiveSteps.map((step) => ({
-        id: step.id,
-        title: step.title,
-        events: step.events,
-      })),
-    [s.effectiveSteps],
-  );
+  const stepOptions = backlogCreation.steps ?? s.effectiveSteps;
+  const destination = backlogCreation.destination ?? {
+    workflowId: s.effectiveWorkflowId,
+    stepId: s.effectiveSteps[0]?.id ?? null,
+  };
 
   if (!s.isMounted) {
     return <div className="h-full min-h-0 w-full bg-background" />;
@@ -440,49 +438,52 @@ export function KanbanBoard({ onPreviewTask, onOpenTask, onBeforeEdit }: KanbanB
       )}
       <KanbanBoardDialogs
         isDialogOpen={s.isDialogOpen}
-        handleDialogOpenChange={s.handleDialogOpenChange}
+        handleDialogOpenChange={(open) => {
+          if (!open) backlogCreation.clearDestination();
+          s.handleDialogOpenChange(open);
+        }}
         workspaceId={s.workspaceState.activeId}
-        workflowId={s.effectiveWorkflowId}
-        defaultStepId={s.effectiveSteps[0]?.id ?? null}
+        workflowId={destination.workflowId}
+        defaultStepId={destination.stepId}
         stepOptions={stepOptions}
+        creationStepId={backlogCreation.destination?.stepId}
         editingTask={s.editingTask}
-        handleDialogSuccess={s.handleDialogSuccess}
+        handleDialogSuccess={(task, mode) => {
+          backlogCreation.clearDestination();
+          s.handleDialogSuccess(task, mode);
+        }}
         moveError={s.moveError}
         setMoveError={s.setMoveError}
         handleGoToTask={s.handleGoToTask}
       />
-      {s.isMobile && (
-        <MobileSelectionToggle
-          active={s.multiSelect.isMultiSelectMode}
-          onToggle={s.multiSelect.toggleMultiSelect}
+      <BoardActionsContext value={backlogCreation.actions}>
+        <KanbanSwimlanes
+          workspace={s.workspaceState.activeId}
+          viewMode={s.kanbanViewMode || ""}
+          workflowFilter={s.workflowsState.activeId}
+          onPreviewTask={s.handleCardClick}
+          onOpenTask={s.handleOpenTask}
+          onEditTask={s.handleEdit}
+          onDeleteTask={s.handleDelete}
+          onArchiveTask={s.handleArchive}
+          onMoveError={s.handleMoveError}
+          deletingTaskId={s.deletingTaskId}
+          archivingTaskId={s.archivingTaskId}
+          showMaximizeButton={s.enablePreviewOnClick}
+          searchQuery={s.searchQuery}
+          selectedRepositoryIds={s.userSettings.repositoryIds}
+          matchesPluginTaskFilters={matchesPluginTaskFilters}
+          selectedIds={s.multiSelect.selectedIds}
+          onToggleSelect={s.multiSelect.toggleSelect}
+          onSelectRange={s.multiSelect.selectRange}
+          isMultiSelectMode={s.multiSelect.isMultiSelectMode}
+          onToggleMultiSelect={s.multiSelect.toggleMultiSelect}
+          onWorkflowChange={s.handleWorkflowChange}
+          isMobile={s.isMobile}
+          onRefresh={s.refresh}
+          onSnapshotDemandChange={s.setWorkflowSnapshotScope}
         />
-      )}
-      <KanbanSwimlanes
-        workspace={s.workspaceState.activeId}
-        viewMode={s.kanbanViewMode || ""}
-        workflowFilter={s.workflowsState.activeId}
-        onPreviewTask={s.handleCardClick}
-        onOpenTask={s.handleOpenTask}
-        onEditTask={s.handleEdit}
-        onDeleteTask={s.handleDelete}
-        onArchiveTask={s.handleArchive}
-        onMoveError={s.handleMoveError}
-        deletingTaskId={s.deletingTaskId}
-        archivingTaskId={s.archivingTaskId}
-        showMaximizeButton={s.enablePreviewOnClick}
-        searchQuery={s.searchQuery}
-        selectedRepositoryIds={s.userSettings.repositoryIds}
-        matchesPluginTaskFilters={matchesPluginTaskFilters}
-        selectedIds={s.multiSelect.selectedIds}
-        onToggleSelect={s.multiSelect.toggleSelect}
-        onSelectRange={s.multiSelect.selectRange}
-        isMultiSelectMode={s.multiSelect.isMultiSelectMode}
-        onToggleMultiSelect={s.multiSelect.toggleMultiSelect}
-        onWorkflowChange={s.handleWorkflowChange}
-        isMobile={s.isMobile}
-        onRefresh={s.refresh}
-        onSnapshotDemandChange={s.setWorkflowSnapshotScope}
-      />
+      </BoardActionsContext>
       <TaskMultiSelectToolbar
         selectedIds={s.multiSelect.selectedIds}
         steps={s.multiSelectSteps}
@@ -505,6 +506,7 @@ type KanbanBoardDialogsProps = {
   workspaceId: string | null;
   workflowId: string | null;
   defaultStepId: string | null;
+  creationStepId?: string;
   stepOptions: Array<{
     id: string;
     title: string;
@@ -526,6 +528,7 @@ function KanbanBoardDialogs({
   workspaceId,
   workflowId,
   defaultStepId,
+  creationStepId,
   stepOptions,
   editingTask,
   handleDialogSuccess,
@@ -541,6 +544,18 @@ function KanbanBoardDialogs({
         workspaceId={workspaceId}
         workflowId={workflowId}
         defaultStepId={defaultStepId}
+        creationStepId={creationStepId}
+        lockedFields={creationStepId ? { workflow: true } : undefined}
+        aboveDescriptionSlot={
+          creationStepId && (
+            <span
+              className="self-start rounded-md bg-muted px-2 py-1 text-xs"
+              data-testid="task-create-target-column"
+            >
+              {stepOptions.find((step) => step.id === creationStepId)?.title}
+            </span>
+          )
+        }
         steps={stepOptions}
         editingTask={
           editingTask
@@ -609,22 +624,5 @@ function ApprovalWarningDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
-}
-
-function MobileSelectionToggle({ active, onToggle }: { active: boolean; onToggle: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <div className="px-2 py-1">
-      <Button
-        variant="ghost"
-        className="subtle-action cursor-pointer bg-muted/50"
-        aria-pressed={active}
-        onClick={onToggle}
-        data-testid="mobile-select-tasks"
-      >
-        {t(active ? "kanban:cancelTaskSelection" : "kanban:selectTasks")}
-      </Button>
-    </div>
   );
 }

@@ -63,14 +63,11 @@ export function StartupPageSettingsCard({
         {OPTIONS.map((option) => {
           const labelId = `startup-page-${option.value}-label`;
           const descriptionId = `startup-page-${option.value}-description`;
-          const selected = value === option.value;
           return (
             <Label
               key={option.value}
               htmlFor={`startup-page-${option.value}`}
-              className={`flex min-h-11 w-full min-w-0 cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors ${
-                selected ? "border-primary bg-primary/5" : "border-border hover:bg-muted/30"
-              }`}
+              className="settings-option flex min-h-11 w-full min-w-0 cursor-pointer items-start gap-3 rounded-lg p-3"
             >
               <RadioGroupItem
                 id={`startup-page-${option.value}`}

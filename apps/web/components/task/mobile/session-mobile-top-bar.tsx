@@ -79,7 +79,7 @@ function MobileTaskTitle({
   return (
     <button
       type="button"
-      className="flex h-11 min-w-11 flex-1 flex-col justify-center rounded-md text-left cursor-pointer hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+      className="subtle-action flex h-11 min-w-11 flex-1 flex-col justify-center rounded-md px-1 text-left cursor-pointer"
       onClick={(event) => {
         event.currentTarget.focus();
         onTaskPickerClick();

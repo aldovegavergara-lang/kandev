@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { IconActivity, IconGitBranch, IconLayoutSidebar } from "@tabler/icons-react";
 import { SettingsRow } from "./settings-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@kandev/ui/select";
-import { Separator } from "@kandev/ui/separator";
 import { GENERAL_SETTINGS_TARGETS } from "@/lib/settings-discovery/catalog/preferences";
 import type { AppearanceState } from "./appearance-settings-state";
 import { SidebarHoverSettingsCard } from "./sidebar-hover-settings-card";
@@ -64,14 +63,12 @@ export function AppearanceAccountSections({
   const { t } = useTranslation();
   return (
     <>
-      <Separator />
       <SettingsSection
         icon={<IconLayoutSidebar className="h-5 w-5" />}
         title={t("settings:sidebarHoverTitle")}
       >
         <SidebarHoverSettingsCard draft={draft} saved={saved} updateDraft={updateDraft} />
       </SettingsSection>
-      <Separator />
       <SettingsSection
         icon={<IconActivity className="h-5 w-5" />}
         title={t("settings:statusBar")}
@@ -84,8 +81,6 @@ export function AppearanceAccountSections({
         />
       </SettingsSection>
 
-      <Separator />
-
       <SettingsSection
         icon={<IconGitBranch className="h-5 w-5" />}
         title={t("settings:changesPanel")}
@@ -97,8 +92,6 @@ export function AppearanceAccountSections({
           onChange={(changesPanelLayout) => updateDraft({ changesPanelLayout })}
         />
       </SettingsSection>
-
-      <Separator />
 
       <SettingsSection
         icon={<IconActivity className="h-5 w-5" />}

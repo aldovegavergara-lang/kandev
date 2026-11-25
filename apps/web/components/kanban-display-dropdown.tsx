@@ -31,6 +31,9 @@ import {
 } from "@/components/display-settings-summary";
 
 type KanbanDisplayDropdownProps = {
+  triggerContent?: ReactNode;
+  triggerTestId?: string;
+  extraActions?: (close: () => void) => ReactNode;
   triggerSize?: ComponentProps<typeof Button>["size"];
   currentPage?: TaskListingPage;
   /** Plugin-registered task filters (`registerTaskFilter`) rendered as extra sections. */
@@ -470,6 +473,9 @@ function DropdownSections(props: DropdownSectionsProps) {
 }
 
 export function KanbanDisplayDropdown({
+  triggerContent,
+  triggerTestId = "display-button",
+  extraActions,
   triggerSize = "icon",
   currentPage = "kanban",
   pluginFilters,
@@ -495,27 +501,28 @@ export function KanbanDisplayDropdown({
           ref={triggerRef}
           variant="ghost"
           size={triggerSize}
-          data-testid="display-button"
-          aria-label={t("kanban:displayOptions")}
-          className="subtle-action cursor-pointer"
+          data-testid={triggerTestId}
+          aria-label={triggerContent ? undefined : t("kanban:displayOptions")}
+          className="subtle-action min-w-0 cursor-pointer"
         >
-          <IconAdjustmentsHorizontal className="h-4 w-4" />
+          {triggerContent ?? <IconAdjustmentsHorizontal className="h-4 w-4" />}
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        align="end"
+        align={triggerContent ? "start" : "end"}
         data-testid="display-settings-content"
         className="w-[280px] max-h-(--radix-popover-content-available-height) overflow-y-auto p-3"
         onPointerDownOutside={(e) => {
           const target = e.target as HTMLElement;
           if (
             triggerRef.current?.contains(target) ||
-            target.closest('[data-slot="select-content"]')
+            target.closest('[data-slot="select-content"], [data-slot="dropdown-menu-content"]')
           ) {
             e.preventDefault();
           }
         }}
       >
+        {extraActions && <div className="mb-3">{extraActions(() => handleOpenChange(false))}</div>}
         <DropdownSections
           {...displaySettings}
           currentPage={currentPage}

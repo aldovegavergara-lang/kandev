@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type CSSProperties } from "react";
+import { useMemo, type CSSProperties, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { IconArrowUpRight } from "@tabler/icons-react";
 import { parseTurnTimestamp } from "@/lib/state/slices/session/turn-actions";
@@ -127,12 +127,14 @@ export function SoundConsole({
   steps,
   tasks,
   workflowName,
+  workflowHeader,
   onOpenTask,
   onSelectChannel,
 }: {
   steps: WorkflowStep[];
   tasks: Task[];
   workflowName?: string;
+  workflowHeader?: ReactNode;
   onOpenTask: (task: Task) => void;
   onSelectChannel: (index: number) => void;
 }) {
@@ -158,7 +160,14 @@ export function SoundConsole({
             </button>
           </h2>
         )}
-        <ConsoleCaption lead={lead} total={total} workflowName={lead ? workflowName : undefined} />
+        {workflowHeader}
+        {(lead || !workflowHeader) && (
+          <ConsoleCaption
+            lead={lead}
+            total={total}
+            workflowName={workflowHeader ? undefined : workflowName}
+          />
+        )}
       </div>
       {lead && (
         <div className="console-display">

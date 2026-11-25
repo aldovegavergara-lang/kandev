@@ -208,6 +208,7 @@ export function activatePlanMode({
 export type BuildCreatePayloadArgs = {
   workspaceId: string;
   effectiveWorkflowId: string;
+  creationStepId?: string;
   trimmedTitle: string;
   trimmedDescription: string;
   autoTitle?: boolean;
@@ -296,6 +297,7 @@ export function buildCreateTaskPayload(args: BuildCreatePayloadArgs): CreateTask
   return {
     workspace_id: args.workspaceId,
     workflow_id: args.effectiveWorkflowId,
+    ...(args.creationStepId ? { workflow_step_id: args.creationStepId } : {}),
     ...buildCreateTaskTitle(args),
     description: args.trimmedDescription,
     repositories: args.repositoriesPayload,

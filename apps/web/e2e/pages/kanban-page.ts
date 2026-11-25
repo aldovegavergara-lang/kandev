@@ -243,12 +243,14 @@ export class KanbanPage {
   }
 
   async enableMultiSelect() {
-    await this.multiSelectToggle.first().waitFor({ state: "visible" });
     const isEnabled = await this.page
       .locator('[data-multi-select-active="true"]')
       .first()
       .isVisible();
     if (!isEnabled) {
+      if (!(await this.multiSelectToggle.first().isVisible())) {
+        await this.page.getByTestId("display-button").click();
+      }
       await this.multiSelectToggle.first().click();
     }
   }

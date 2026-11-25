@@ -130,12 +130,12 @@ function SettingsGroupContent({
   }
   return (
     <SettingsCard isDirty={isDirty} className="min-w-0 w-full py-0" data-settings-group-card="true">
-      <div className={cn("divide-y divide-border/70 px-4 py-2", contentClassName)}>{children}</div>
+      <div className={cn("space-y-1 px-4 py-2", contentClassName)}>{children}</div>
     </SettingsCard>
   );
 }
 
-/** A settings group owns one heading and, by default, one bordered surface. */
+/** A settings group owns one heading and, by default, one surface. */
 export function SettingsGroup({
   title,
   description,
@@ -203,7 +203,7 @@ export function SettingsGroup({
                 onToggle={(event) => setOpen(event.currentTarget.open)}
                 data-settings-group-disclosure="true"
               >
-                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+                <summary className="subtle-action flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
                   <SettingsGroupHeading
                     title={title}
                     description={description}

@@ -212,7 +212,7 @@ export function MobileChatInputToolbar(props: MobileToolbarProps) {
     <div
       data-testid="mobile-chat-input-toolbar"
       data-legacy-testid="chat-input-toolbar"
-      className={`flex items-center gap-1 px-1 pt-0 pb-0.5 border-t border-border ${
+      className={`flex items-center gap-1 px-1 pt-0 pb-0.5 border-t border-[color:var(--chrome-divider)] ${
         resetConfirmationOpen ? "relative z-10 bg-background" : ""
       }`}
     >

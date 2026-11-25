@@ -75,6 +75,7 @@
   --app-status-bar-height: 0px;
   --cobalt: #2f5bff;
   --cobalt-foreground: #ffffff;
+  --chrome-divider: color-mix(in srgb, var(--border) 58%, var(--background));
   --graphite: #2a2d36;
   --stone: #e4e3de;
   --font-geist-sans:
@@ -213,8 +214,7 @@
 }
 
 @media (hover: hover) {
-  .subtle-action:enabled:hover,
-  .subtle-action[role="button"]:not([aria-disabled="true"]):hover {
+  .subtle-action:not(:disabled, [aria-disabled="true"]):hover {
     border-color: var(--subtle-action-border, var(--border));
     background-color: var(--subtle-action-hover, var(--muted));
   }
@@ -227,6 +227,25 @@
 
 .subtle-action:focus-visible {
   outline: 2px solid var(--subtle-action-focus, var(--ring));
+  outline-offset: -2px;
+}
+
+.settings-option {
+  border: 1px solid transparent;
+}
+
+.settings-option:has([data-state="checked"]) {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+@media (hover: hover) {
+  .settings-option:hover {
+    border-color: var(--border);
+  }
+}
+
+.settings-option:has(:focus-visible) {
+  outline: 2px solid var(--ring);
   outline-offset: -2px;
 }
 

@@ -400,7 +400,7 @@ function PresetDropdown({
             <Button
               ref={triggerRef}
               size="sm"
-              variant="outline"
+              variant="ghost"
               className="cursor-pointer px-2"
               data-testid="layout-preset-trigger"
               aria-label={t("task:layoutPresets")}

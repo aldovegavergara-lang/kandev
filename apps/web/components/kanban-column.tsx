@@ -18,6 +18,8 @@ import {
   type KeyboardReorderDraft,
 } from "./kanban/virtualized-column-task-list";
 
+import { BacklogCreateButton } from "./kanban/board-actions";
+
 export interface WorkflowStep {
   id: string;
   title: string;
@@ -103,6 +105,21 @@ function ColumnHeader({
           </span>
         )}
       </div>
+      <BacklogCreateButton stepId={step.id} />
+    </div>
+  );
+}
+
+function ColumnHeading({
+  hidden,
+  step,
+  tasks,
+  headerRef,
+}: Parameters<typeof ColumnHeader>[0] & { hidden: boolean }) {
+  if (!hidden) return <ColumnHeader step={step} tasks={tasks} headerRef={headerRef} />;
+  return (
+    <div className="flex justify-end empty:hidden">
+      <BacklogCreateButton stepId={step.id} touch />
     </div>
   );
 }
@@ -237,7 +254,7 @@ export const KanbanColumn = memo(function KanbanColumn({
       )}
     >
       {/* Column Header */}
-      {!hideHeader && <ColumnHeader step={step} tasks={tasks} headerRef={headerRef} />}
+      <ColumnHeading hidden={hideHeader} step={step} tasks={tasks} headerRef={headerRef} />
 
       <VirtualizedColumnTaskList
         onContentHeightChange={onContentHeightChange}

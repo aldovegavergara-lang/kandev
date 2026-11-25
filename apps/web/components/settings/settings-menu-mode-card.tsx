@@ -53,7 +53,7 @@ export function SettingsMenuModeCard({
         {SETTINGS_MENU_MODES.map((mode) => (
           <Label
             key={mode}
-            className="flex cursor-pointer items-start gap-3 rounded-md border p-3"
+            className="settings-option flex min-h-11 cursor-pointer items-start gap-3 rounded-lg p-3"
             data-testid={`settings-menu-mode-${mode}`}
           >
             <RadioGroupItem value={mode} className="mt-0.5" />

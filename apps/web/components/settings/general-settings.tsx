@@ -14,7 +14,6 @@ import {
   IconHome,
 } from "@tabler/icons-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@kandev/ui/select";
-import { Separator } from "@kandev/ui/separator";
 import { Switch } from "@kandev/ui/switch";
 import { SettingsSection } from "@/components/settings/settings-section";
 import { settingsControlClassName } from "@/components/settings/settings-control";
@@ -149,19 +148,13 @@ function StartupPageSettingsSection({
 }) {
   const { t } = useTranslation();
   return (
-    <>
-      <Separator />
-
-      <SettingsSection
-        icon={<IconHome className="h-5 w-5" />}
-        title={t("settings:startupPage")}
-        description={t("settings:chooseWhatOpensWhenKandevStarts")}
-      >
-        <StartupPageSettingsCard value={value} isDirty={isDirty} onChange={onChange} />
-      </SettingsSection>
-
-      <Separator />
-    </>
+    <SettingsSection
+      icon={<IconHome className="h-5 w-5" />}
+      title={t("settings:startupPage")}
+      description={t("settings:chooseWhatOpensWhenKandevStarts")}
+    >
+      <StartupPageSettingsCard value={value} isDirty={isDirty} onChange={onChange} />
+    </SettingsSection>
   );
 }
 
@@ -176,17 +169,13 @@ function SettingsMenuModeSection({
 }) {
   const { t } = useTranslation();
   return (
-    <>
-      <Separator />
-
-      <SettingsSection
-        icon={<IconBinaryTree className="h-5 w-5" />}
-        title={t("settings:settingsMenu")}
-        description={t("settings:chooseHowDeepTheSettingsMenuGoes")}
-      >
-        <SettingsMenuModeCard value={value} isDirty={isDirty} onChange={onChange} />
-      </SettingsSection>
-    </>
+    <SettingsSection
+      icon={<IconBinaryTree className="h-5 w-5" />}
+      title={t("settings:settingsMenu")}
+      description={t("settings:chooseHowDeepTheSettingsMenuGoes")}
+    >
+      <SettingsMenuModeCard value={value} isDirty={isDirty} onChange={onChange} />
+    </SettingsSection>
   );
 }
 
@@ -254,8 +243,6 @@ export function TaskActionsSettings() {
         </div>
       </SettingsSection>
 
-      <Separator />
-
       <SettingsSection
         icon={<IconArrowBackUp className="h-5 w-5" />}
         title={t("settings:transcriptNavigation")}
@@ -263,8 +250,6 @@ export function TaskActionsSettings() {
       >
         <AnchoredPromptBarSettings />
       </SettingsSection>
-
-      <Separator />
 
       <SettingsSection
         icon={<IconListCheck className="h-5 w-5" />}
@@ -534,7 +519,6 @@ export function AppearanceSettings() {
         title={t("settings:appearance")}
         description={t("settings:customizeHowTheApplicationLooks")}
       />
-      <Separator />
       <AppearanceSettingsSections
         draft={draft}
         saved={saved}
@@ -584,8 +568,6 @@ export function KeyboardShortcutsSettings() {
           onChange={(chatSubmitKey) => updateDraft({ chatSubmitKey })}
         />
       </SettingsSection>
-
-      <Separator />
 
       <SettingsSection
         icon={<IconCommand className="h-5 w-5" />}

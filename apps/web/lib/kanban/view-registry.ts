@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { IconHierarchy3, IconLayoutColumns, IconTimeline } from "@tabler/icons-react";
 import { SwimlaneKanbanContent } from "@/components/kanban/swimlane-kanban-content";
 import { SwimlaneGraph2Content } from "@/components/kanban/swimlane-graph2-content";
@@ -13,6 +13,7 @@ export type ViewContentProps = {
   fillHeight?: boolean;
   workflowId: string;
   workflowName?: string;
+  workflowHeader?: ReactNode;
   steps: WorkflowStep[];
   moveTargetSteps: WorkflowStep[];
   tasks: Task[];

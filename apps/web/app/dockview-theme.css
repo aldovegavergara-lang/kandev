@@ -4,9 +4,9 @@
   --dv-background-color: var(--card);
   --dv-group-view-background-color: var(--background);
 
-  --dv-separator-border: var(--border);
+  --dv-separator-border: var(--chrome-divider);
   --dv-active-sash-color: var(--primary);
-  --dv-paneview-header-border-color: var(--border);
+  --dv-paneview-header-border-color: var(--chrome-divider);
 
   --dv-tabs-and-actions-container-font-size: 12px;
   --dv-tabs-and-actions-container-height: 40px;
@@ -43,7 +43,7 @@
 
 .dockview-theme-kandev .dv-tabs-and-actions-container {
   background: var(--background);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--chrome-divider);
   min-height: 40px;
   height: 40px;
   padding: 7px 5px 5px;
@@ -117,6 +117,7 @@
 .dockview-theme-kandev .dv-tab:hover {
   background: color-mix(in srgb, var(--muted) 50%, transparent);
   color: var(--foreground);
+  box-shadow: inset 0 0 0 1px var(--border);
 }
 
 .dockview-theme-kandev .dv-active-tab {

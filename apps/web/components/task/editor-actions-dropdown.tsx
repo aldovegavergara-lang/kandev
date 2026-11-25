@@ -33,8 +33,8 @@ export function EditorActionsDropdown({
           <Button
             ref={triggerRef}
             size="sm"
-            variant="outline"
-            className="rounded-none border-0 border-l px-2 cursor-pointer focus-visible:ring-inset"
+            variant="ghost"
+            className="px-2 cursor-pointer focus-visible:ring-inset"
             data-testid="editors-menu-list"
             aria-label={t("task:editorActions")}
             disabled={!sessionId}

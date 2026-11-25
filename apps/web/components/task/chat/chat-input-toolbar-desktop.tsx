@@ -212,7 +212,7 @@ export function DesktopChatInputToolbar(props: DesktopToolbarProps) {
       ref={toolbarRef}
       data-testid="chat-input-toolbar"
       className={cn(
-        "hidden items-center gap-1 px-1 pt-0 pb-0.5 border-t border-border md:flex",
+        "hidden items-center gap-1 px-1 pt-0 pb-0.5 border-t border-[color:var(--chrome-divider)] md:flex",
         isCollapsed ? "overflow-x-auto scrollbar-hide" : "overflow-visible",
       )}
     >

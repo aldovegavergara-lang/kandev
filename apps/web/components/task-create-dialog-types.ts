@@ -70,6 +70,7 @@ export interface TaskCreateDialogProps {
   workspaceId: string | null;
   workflowId: string | null;
   defaultStepId: string | null;
+  creationStepId?: string;
   steps: Array<{
     id: string;
     title: string;
@@ -571,6 +572,7 @@ export type SubmitHandlersDeps = {
   workspaceId: string | null;
   workflowId: string | null;
   effectiveWorkflowId: string | null;
+  creationStepId?: string;
   /** Unified repo list from the form. Empty when in GitHub URL mode. */
   repositories: TaskRepoRow[];
   /** Whether the user explicitly changed repository selections in this form. */
